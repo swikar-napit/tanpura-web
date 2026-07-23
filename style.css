@@ -8,7 +8,8 @@ body {
   background: radial-gradient(circle at 20% 0%, rgba(55, 154, 184, 0.22), transparent 34rem), #0b1728;
   display: flex;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 100vh;   /* fallback for older browsers */
+  min-height: 100dvh;  /* accounts for mobile browser address bar showing/hiding */
   padding: 28px 16px;
 }
 
