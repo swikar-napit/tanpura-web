@@ -76,9 +76,16 @@ async function loadAndDecode(filename) {
 }
 
 // Quietly preload every note (both shruthi modes) in the background
-// so switching pitch/mode later is instant.
-function preloadAllNotes() {
-  Object.values(NOTE_FILE).forEach((base) => {
+// so switching pitch/mode later is instant. The currently-selected note
+// (default "C") goes first so it's ready as fast as possible.
+function preloadAllNotes(priorityNote) {
+  const priorityBase = priorityNote ? NOTE_FILE[priorityNote] : null;
+  const bases = Object.values(NOTE_FILE);
+  const ordered = priorityBase
+    ? [priorityBase, ...bases.filter((b) => b !== priorityBase)]
+    : bases;
+
+  ordered.forEach((base) => {
     loadAndDecode(base).catch(() => {});       // Pancham
     loadAndDecode("m" + base).catch(() => {}); // Madhyam
   });
@@ -188,19 +195,13 @@ transportBtn.addEventListener("click", async () => {
 });
 
 // ===== Background preload =====
-// AudioContext can't do real work until a user gesture happens (browser
-// autoplay policy), so kick off preloading on the first click/touch/keydown
-// anywhere on the page — this happens before the user even presses Start.
-let preloadStarted = false;
-function triggerPreloadOnce() {
-  if (preloadStarted) return;
-  preloadStarted = true;
-  getAudioContext();
-  preloadAllNotes();
-}
-["pointerdown", "keydown"].forEach((evt) =>
-  document.addEventListener(evt, triggerPreloadOnce, { once: true, passive: true })
-);
+// Fetching + decodeAudioData do NOT require a user gesture — only actually
+// starting sound output does. So we kick off preloading immediately when the
+// page loads, well before the user ever touches Start. By the time they
+// click, the buffer for the selected note (and usually all of them) is
+// already decoded and sitting in memory, so playback starts with ~0 delay.
+getAudioContext();          // safe to create early; starts "suspended", that's fine
+preloadAllNotes("C");       // starts fetch+decode for all 24 files, "C" first
 
 // ===== Madhyam Shruthi toggle =====
 const shruthiToggle = document.getElementById("shruthiToggle");
