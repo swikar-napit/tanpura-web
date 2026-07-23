@@ -1,11 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanpura-web</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Tambura</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
+
+  <div class="app">
+    <div class="titlebar">
+      <h1>Web Tambura</h1>
+      <p>Tune · Play · Practice</p>
+    </div>
+
+    <div class="card">
+      <div class="label">Volume <span class="value" id="volValue">60%</span></div>
+      <input type="range" id="volSlider" min="0" max="100" value="60" style="--fill:60%">
+    </div>
+
+    <div class="card">
+      <div class="toggle-row">
+        <div>
+          <div class="name">Madhyam Shruthi</div>
+          <div class="sub">Switch tuning mode</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="shruthiToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Select Pitch</div>
+      <div class="pitch-grid" id="pitchGrid"></div>
+    </div>
+
+    <div class="card">
+      <button class="transport-btn" id="transportBtn">▶ Play</button>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
 </body>
 </html>
