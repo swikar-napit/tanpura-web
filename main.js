@@ -10,17 +10,25 @@ volSlider.addEventListener('input', () => {
 // ===== Pitch grid =====
 const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const grid = document.getElementById('pitchGrid');
+const selectedPitch = document.getElementById('selectedPitch');
 let selectedNote = "C";
 
 NOTES.forEach(note => {
-  const btn = document.createElement('div');
+  const btn = document.createElement('button');
+  btn.type = 'button';
   btn.className = 'pitch-btn' + (note === selectedNote ? ' selected' : '');
   btn.textContent = note;
+  btn.setAttribute('aria-pressed', note === selectedNote);
 
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.pitch-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('.pitch-btn').forEach(b => {
+      b.classList.remove('selected');
+      b.setAttribute('aria-pressed', 'false');
+    });
     btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', 'true');
     selectedNote = note;
+    selectedPitch.textContent = note;
     // TODO: when the audio engine is wired up, change the drone's pitch here
   });
 
@@ -33,8 +41,9 @@ let playing = false;
 
 transportBtn.addEventListener('click', () => {
   playing = !playing;
-  transportBtn.textContent = playing ? '■ Stop' : '▶ Play';
+  transportBtn.textContent = playing ? '■ Stop drone' : '▶ Start drone';
   transportBtn.classList.toggle('playing', playing);
+  transportBtn.setAttribute('aria-pressed', playing);
   // TODO: when the audio engine is wired up, start/stop the drone here
 });
 

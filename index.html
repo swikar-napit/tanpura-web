@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Tambura</title>
+  <title>Web Tanpura</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div class="app">
-    <div class="titlebar">
-      <h1>Web Tambura</h1>
-      <p>Tune · Play · Practice</p>
-    </div>
+    <header class="titlebar">
+      <p class="eyebrow">Practice companion</p>
+      <h1>Web Tanpura</h1>
+      <p>Set your shruthi, then let the drone hold the space.</p>
+    </header>
 
     <div class="card">
-      <div class="label">Volume <span class="value" id="volValue">60%</span></div>
-      <input type="range" id="volSlider" min="0" max="100" value="60" style="--fill:60%">
+      <div class="label"><label for="volSlider">Volume</label><span class="value" id="volValue">60%</span></div>
+      <input type="range" id="volSlider" min="0" max="100" value="60" style="--fill:60%" aria-label="Volume">
     </div>
 
     <div class="card">
@@ -26,19 +27,19 @@
           <div class="sub">Switch tuning mode</div>
         </div>
         <label class="switch">
-          <input type="checkbox" id="shruthiToggle">
+          <input type="checkbox" id="shruthiToggle" aria-label="Enable Madhyam Shruthi">
           <span class="slider"></span>
         </label>
       </div>
     </div>
 
     <div class="card">
-      <div class="label">Select Pitch</div>
-      <div class="pitch-grid" id="pitchGrid"></div>
+      <div class="label">Select Pitch <span class="value" id="selectedPitch">C</span></div>
+      <div class="pitch-grid" id="pitchGrid" role="group" aria-label="Select pitch"></div>
     </div>
 
     <div class="card">
-      <button class="transport-btn" id="transportBtn">▶ Play</button>
+      <button class="transport-btn" id="transportBtn" aria-pressed="false">▶ Start</button>
     </div>
   </div>
 
