@@ -12,7 +12,7 @@
 
 ## 🌐 Live Demo
 
-👉 [Click here to open Web Tanpura](https://swikar-napit.github.io/tanpura-web/)
+👉 [Click here to open Web Tanpura](https://tanpura-web.vercel.app/)
 
 ---
 
