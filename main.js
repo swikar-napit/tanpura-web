@@ -43,33 +43,58 @@ function playBuffer(buffer) {
   sourceNode.start(0);
 }
 
+// Cache of decoded buffers, keyed by filename (e.g. "c", "mc")
+const bufferCache = new Map();
+// Tracks in-flight loads so we never fetch/decode the same file twice in parallel
+const loadingPromises = new Map();
+
+async function loadAndDecode(filename) {
+  if (bufferCache.has(filename)) return bufferCache.get(filename);
+  if (loadingPromises.has(filename)) return loadingPromises.get(filename);
+
+  const ctx = getAudioContext();
+  const url = `audio/${filename}.wav`;
+
+  const promise = fetch(url)
+    .then((res) => {
+      if (!res.ok) throw new Error(`Failed to load ${url}`);
+      return res.arrayBuffer();
+    })
+    .then((arr) => ctx.decodeAudioData(arr))
+    .then((buffer) => {
+      bufferCache.set(filename, buffer);
+      loadingPromises.delete(filename);
+      return buffer;
+    })
+    .catch((err) => {
+      loadingPromises.delete(filename);
+      throw err;
+    });
+
+  loadingPromises.set(filename, promise);
+  return promise;
+}
+
+// Quietly preload every note (both shruthi modes) in the background
+// so switching pitch/mode later is instant.
+function preloadAllNotes() {
+  Object.values(NOTE_FILE).forEach((base) => {
+    loadAndDecode(base).catch(() => {});       // Pancham
+    loadAndDecode("m" + base).catch(() => {}); // Madhyam
+  });
+}
+
 async function startTanpura(note) {
   const ctx = getAudioContext();
   if (ctx.state === "suspended") await ctx.resume();
 
   const madhyam  = shruthiToggle.checked ? "m" : "";
   const filename = madhyam + NOTE_FILE[note];
-  const url      = `audio/${filename}.wav`;
 
-  return new Promise((resolve, reject) => {
-    const req = new XMLHttpRequest();
-    req.open("GET", url, true);
-    req.responseType = "arraybuffer";
-    req.onload = () => {
-      ctx.decodeAudioData(
-        req.response,
-        (buffer) => {
-          audioBuffer = buffer;
-          playBuffer(buffer);
-          isPlaying = true;
-          resolve();
-        },
-        (err) => reject(err)
-      );
-    };
-    req.onerror = () => reject(new Error(`Failed to load ${url}`));
-    req.send();
-  });
+  const buffer = await loadAndDecode(filename);
+  audioBuffer = buffer;
+  playBuffer(buffer);
+  isPlaying = true;
 }
 
 function stopTanpura() {
@@ -161,6 +186,21 @@ transportBtn.addEventListener("click", async () => {
     }
   }
 });
+
+// ===== Background preload =====
+// AudioContext can't do real work until a user gesture happens (browser
+// autoplay policy), so kick off preloading on the first click/touch/keydown
+// anywhere on the page — this happens before the user even presses Start.
+let preloadStarted = false;
+function triggerPreloadOnce() {
+  if (preloadStarted) return;
+  preloadStarted = true;
+  getAudioContext();
+  preloadAllNotes();
+}
+["pointerdown", "keydown"].forEach((evt) =>
+  document.addEventListener(evt, triggerPreloadOnce, { once: true, passive: true })
+);
 
 // ===== Madhyam Shruthi toggle =====
 const shruthiToggle = document.getElementById("shruthiToggle");
