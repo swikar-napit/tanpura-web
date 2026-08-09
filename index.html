@@ -52,31 +52,61 @@
         <p>Set your tempo and let it click alongside the drone.</p>
       </header>
 
-      <div class="card">
-        <div class="label">
-          Tempo
-          <span class="value" id="bpmValue">80 BPM</span>
-        </div>
-        <input type="range" id="bpmSlider" min="40" max="208" value="80" style="--fill:34%" aria-label="Tempo in beats per minute">
+      <div class="card metro-lights-card">
+        <div class="metro-lights" id="metroLights" aria-hidden="true"></div>
       </div>
 
       <div class="card">
-        <div class="metro-row">
-          <button type="button" class="tap-btn" id="tapTempoBtn">Tap Tempo</button>
+        <div class="bpm-block">
+          <div class="bpm-col">
+            <button type="button" class="bpm-step" id="bpmMinus1" aria-label="Decrease tempo by 1">-1</button>
+            <button type="button" class="bpm-step" id="bpmMinus5" aria-label="Decrease tempo by 5">-5</button>
+          </div>
 
-          <div class="beats-select" id="beatsSelect" role="group" aria-label="Beats per measure">
-            <button type="button" class="beats-btn" data-beats="2">2</button>
-            <button type="button" class="beats-btn" data-beats="3">3</button>
-            <button type="button" class="beats-btn selected" data-beats="4">4</button>
-            <button type="button" class="beats-btn" data-beats="6">6</button>
+          <div class="bpm-center">
+            <span class="bpm-ghost" id="bpmGhostUp"></span>
+            <span class="bpm-main" id="bpmMain">80</span>
+            <span class="bpm-ghost" id="bpmGhostDown"></span>
+          </div>
+
+          <div class="bpm-col">
+            <button type="button" class="bpm-step" id="bpmPlus1" aria-label="Increase tempo by 1">+1</button>
+            <button type="button" class="bpm-step" id="bpmPlus5" aria-label="Increase tempo by 5">+5</button>
           </div>
         </div>
 
-        <div class="beat-dots" id="beatDots" aria-hidden="true"></div>
+        <div class="bpm-slider-row">
+          <input type="range" id="bpmSlider" min="40" max="208" value="80" aria-label="Tempo in beats per minute">
+          <span class="tempo-name" id="tempoName">Moderato</span>
+        </div>
+      </div>
+
+      <div class="card metro-stats-card">
+        <div class="metro-stat">
+          <span class="metro-stat-label">Beats/bar</span>
+          <div class="metro-stat-stepper">
+            <button type="button" class="chevron-btn" id="beatsMinusBtn" aria-label="Fewer beats per bar">‹</button>
+            <span class="metro-stat-value" id="beatsValue">4</span>
+            <button type="button" class="chevron-btn" id="beatsPlusBtn" aria-label="More beats per bar">›</button>
+          </div>
+        </div>
+
+        <div class="metro-stat">
+          <span class="metro-stat-label">Tap Tempo</span>
+          <button type="button" class="tap-icon-btn" id="tapTempoBtn" aria-label="Tap to set tempo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 4v9a3 3 0 1 0 3 3V4Z" />
+              <path d="M14 8h3a2 2 0 0 1 2 2v9" />
+              <path d="M14 13h3" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div class="card">
-        <button class="transport-btn metro-btn" id="metroBtn" aria-pressed="false">♩ Start Metronome</button>
+        <button class="metro-play-btn" id="metroBtn" aria-pressed="false" aria-label="Start metronome">
+          <svg viewBox="0 0 24 24" fill="currentColor" id="metroPlayIcon"><path d="M8 5v14l11-7Z" /></svg>
+        </button>
       </div>
     </div>
   </div>

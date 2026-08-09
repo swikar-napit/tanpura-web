@@ -25,7 +25,8 @@ body {
 }
 
 .layout .app {
-  flex: 1 1 440px;
+  flex: 0 1 440px;
+  max-width: 440px;
 }
 
 .app {
@@ -269,116 +270,252 @@ input[type="range"]:focus-visible {
   background: linear-gradient(135deg, #8a5f16, #d8a13f 85%);
 }
 
-/* ===== Metronome ===== */
-.metro-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+/* ===== Metronome: beat lights ===== */
+.metro-lights-card {
+  padding-top: 26px;
+  padding-bottom: 26px;
 }
 
-.tap-btn {
-  appearance: none;
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(243, 248, 251, 0.8);
-  padding: 9px 16px;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
+.metro-lights {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+}
+
+.metro-light {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #4a3a1a, #2a2210);
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.6);
+  transition: background 0.06s ease, box-shadow 0.06s ease, transform 0.06s ease;
   flex-shrink: 0;
 }
 
-.tap-btn:hover {
-  border-color: #3fb6d8;
-  color: #3fb6d8;
-  background: rgba(63, 182, 216, 0.08);
+.metro-light.accent {
+  width: 26px;
+  height: 26px;
+  background: radial-gradient(circle at 35% 30%, #5a2b1a, #33150c);
 }
 
-.tap-btn:active {
-  transform: scale(0.96);
+.metro-light.lit {
+  background: radial-gradient(circle at 35% 30%, #ffe27a, #f5c542);
+  box-shadow: 0 0 14px 4px rgba(245, 197, 66, 0.65);
+  transform: scale(1.08);
 }
 
-.beats-select {
+.metro-light.accent.lit {
+  background: radial-gradient(circle at 35% 30%, #ff9a5c, #ff6a3d);
+  box-shadow: 0 0 18px 6px rgba(255, 106, 61, 0.7);
+}
+
+/* ===== Metronome: big BPM readout ===== */
+.bpm-block {
   display: flex;
-  gap: 5px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  padding: 3px;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
 }
 
-.beats-btn {
+.bpm-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bpm-step {
   appearance: none;
-  border: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
   background: transparent;
-  color: rgba(243, 248, 251, 0.5);
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  font-size: 0.82rem;
+  color: #3fb6d8;
+  width: 46px;
+  height: 36px;
+  border-radius: 8px;
+  font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.beats-btn:hover {
+.bpm-step:hover {
+  border-color: #3fb6d8;
+  background: rgba(63, 182, 216, 0.1);
+}
+
+.bpm-step:active {
+  transform: scale(0.94);
+}
+
+.bpm-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+}
+
+.bpm-ghost {
+  font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(243, 248, 251, 0.14);
+  line-height: 1.3;
+  height: 1.3em;
+}
+
+.bpm-main {
+  font-size: 3.2rem;
+  font-weight: 800;
+  color: #f3f8fb;
+  line-height: 1.05;
+}
+
+.bpm-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.bpm-slider-row input[type="range"] {
+  flex: 1;
+}
+
+.tempo-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(243, 248, 251, 0.75);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ===== Metronome: beats/bar + tap tempo row ===== */
+.metro-stats-card {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  text-align: center;
+}
+
+.metro-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.metro-stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(243, 248, 251, 0.45);
+}
+
+.metro-stat-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chevron-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: rgba(243, 248, 251, 0.3);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.15s ease;
+}
+
+.chevron-btn:hover {
   color: #3fb6d8;
 }
 
-.beats-btn.selected {
-  background: linear-gradient(135deg, #1c4d8f, #2896b0);
-  color: #fff;
+.chevron-btn:disabled {
+  color: rgba(243, 248, 251, 0.1);
+  cursor: default;
 }
 
-.beat-dots {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 16px;
-  min-height: 14px;
-}
-
-.beat-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  transition: transform 0.08s ease, background 0.08s ease;
-}
-
-.beat-dot.accent {
-  width: 12px;
-  height: 12px;
-}
-
-.beat-dot.active {
-  background: #3fb6d8;
-  transform: scale(1.3);
-}
-
-.beat-dot.accent.active {
-  background: #f3f8fb;
-}
-
-.metro-btn {
-  margin-top: 16px;
-  background: linear-gradient(135deg, #b8862f, #d8a13f);
-  color: #221703;
-}
-
-.metro-btn.playing {
+.metro-stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
   color: #f3f8fb;
-  background: linear-gradient(135deg, #6b4a12, #8f6318);
+  min-width: 24px;
+}
+
+.tap-icon-btn {
+  appearance: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(243, 248, 251, 0.7);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tap-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tap-icon-btn:hover {
+  border-color: #3fb6d8;
+  color: #3fb6d8;
+  background: rgba(63, 182, 216, 0.08);
+}
+
+.tap-icon-btn:active {
+  transform: scale(0.92);
+}
+
+/* ===== Metronome: play button ===== */
+.metro-play-btn {
+  appearance: none;
+  border: none;
+  width: 100%;
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff8a4c, #ff6a3d);
+  color: #221703;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+}
+
+.metro-play-btn svg {
+  width: 26px;
+  height: 26px;
+}
+
+.metro-play-btn:hover {
+  box-shadow: 0 10px 24px rgba(255, 106, 61, 0.3);
+}
+
+.metro-play-btn:active {
+  transform: scale(0.97);
+}
+
+.metro-play-btn.playing {
+  background: linear-gradient(135deg, #3a3f47, #23272d);
+  color: #f3f8fb;
 }
 
 @media (max-width: 380px) {
   body { padding: 12px; }
   .titlebar, .card { padding-left: 20px; padding-right: 20px; }
   .pitch-grid { gap: 7px; }
-  .metro-row { flex-wrap: wrap; }
+  .bpm-block { gap: 12px; }
+  .bpm-main { font-size: 2.5rem; }
+  .bpm-step { width: 40px; }
 }
 
 @media (max-width: 920px) {

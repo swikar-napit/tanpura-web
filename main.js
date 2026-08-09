@@ -209,40 +209,122 @@ preloadAllNotes("C");       // starts fetch+decode for all 24 files, "C" first
 // are scheduled against audioCtx.currentTime, which is sample-accurate and
 // immune to JS/UI thread jitter. This is what keeps tempo rock-solid even
 // if the tab is busy re-rendering something else.
-const bpmSlider    = document.getElementById("bpmSlider");
-const bpmValue     = document.getElementById("bpmValue");
-const tapTempoBtn  = document.getElementById("tapTempoBtn");
-const beatsSelect  = document.getElementById("beatsSelect");
-const beatDotsEl   = document.getElementById("beatDots");
-const metroBtn     = document.getElementById("metroBtn");
+const bpmSlider     = document.getElementById("bpmSlider");
+const bpmMainEl     = document.getElementById("bpmMain");
+const bpmGhostUpEl  = document.getElementById("bpmGhostUp");
+const bpmGhostDnEl  = document.getElementById("bpmGhostDown");
+const tempoNameEl   = document.getElementById("tempoName");
+const tapTempoBtn   = document.getElementById("tapTempoBtn");
+const metroLightsEl = document.getElementById("metroLights");
+const metroBtn      = document.getElementById("metroBtn");
+const metroPlayIcon = document.getElementById("metroPlayIcon");
+
+const beatsValueEl  = document.getElementById("beatsValue");
+const beatsMinusBtn = document.getElementById("beatsMinusBtn");
+const beatsPlusBtn  = document.getElementById("beatsPlusBtn");
+
+const bpmMinus1Btn  = document.getElementById("bpmMinus1");
+const bpmMinus5Btn  = document.getElementById("bpmMinus5");
+const bpmPlus1Btn   = document.getElementById("bpmPlus1");
+const bpmPlus5Btn   = document.getElementById("bpmPlus5");
 
 const SCHEDULE_AHEAD_TIME = 0.1;  // seconds — how far ahead we schedule audio
 const LOOKAHEAD_INTERVAL  = 25;   // ms — how often the scheduler wakes up
+const BPM_MIN = 40;
+const BPM_MAX = 208;
+const BEATS_MIN = 1;
+const BEATS_MAX = 16;
 
 let bpm            = parseInt(bpmSlider.value, 10);
-let beatsPerBar     = 4;
+let beatsPerBar    = 4;
 let metroIsPlaying = false;
 let metroTimerId   = null;
 let nextNoteTime   = 0;
 let currentBeat    = 0;
 let tapTimes       = [];
 
-function buildBeatDots() {
-  beatDotsEl.innerHTML = "";
+function clamp(n, min, max) {
+  return Math.min(max, Math.max(min, n));
+}
+
+// Classic Italian tempo markings, used just for the label next to the slider.
+const TEMPO_NAMES = [
+  { max: 45,  name: "Larghissimo" },
+  { max: 60,  name: "Largo" },
+  { max: 66,  name: "Larghetto" },
+  { max: 76,  name: "Adagio" },
+  { max: 108, name: "Andante" },
+  { max: 120, name: "Moderato" },
+  { max: 156, name: "Allegro" },
+  { max: 176, name: "Vivace" },
+  { max: 200, name: "Presto" },
+  { max: Infinity, name: "Prestissimo" },
+];
+
+function tempoNameFor(value) {
+  return TEMPO_NAMES.find((t) => value <= t.max).name;
+}
+
+function updateBpmDisplay() {
+  bpmMainEl.textContent = bpm;
+  bpmGhostUpEl.textContent = bpm > BPM_MIN ? bpm - 1 : "";
+  bpmGhostDnEl.textContent = bpm < BPM_MAX ? bpm + 1 : "";
+  tempoNameEl.textContent = tempoNameFor(bpm);
+  bpmSlider.value = bpm;
+  const pct = ((bpm - BPM_MIN) / (BPM_MAX - BPM_MIN)) * 100;
+  bpmSlider.style.setProperty("--fill", pct + "%");
+}
+
+function setBpm(value) {
+  bpm = clamp(value, BPM_MIN, BPM_MAX);
+  updateBpmDisplay();
+}
+
+updateBpmDisplay();
+
+bpmSlider.addEventListener("input", () => {
+  setBpm(parseInt(bpmSlider.value, 10));
+});
+
+bpmMinus1Btn.addEventListener("click", () => setBpm(bpm - 1));
+bpmPlus1Btn.addEventListener("click", () => setBpm(bpm + 1));
+bpmMinus5Btn.addEventListener("click", () => setBpm(bpm - 5));
+bpmPlus5Btn.addEventListener("click", () => setBpm(bpm + 5));
+
+// Beats per bar: simple 1-16 stepper.
+function updateBeatsDisplay() {
+  beatsValueEl.textContent = beatsPerBar;
+  beatsMinusBtn.disabled = beatsPerBar <= BEATS_MIN;
+  beatsPlusBtn.disabled = beatsPerBar >= BEATS_MAX;
+}
+
+function setBeatsPerBar(value) {
+  beatsPerBar = clamp(value, BEATS_MIN, BEATS_MAX);
+  currentBeat = 0;
+  updateBeatsDisplay();
+  buildMetroLights();
+}
+
+beatsMinusBtn.addEventListener("click", () => setBeatsPerBar(beatsPerBar - 1));
+beatsPlusBtn.addEventListener("click", () => setBeatsPerBar(beatsPerBar + 1));
+
+function buildMetroLights() {
+  metroLightsEl.innerHTML = "";
   for (let i = 0; i < beatsPerBar; i++) {
-    const dot = document.createElement("span");
-    dot.className = "beat-dot" + (i === 0 ? " accent" : "");
-    beatDotsEl.appendChild(dot);
+    const light = document.createElement("span");
+    light.className = "metro-light" + (i === 0 ? " accent" : "");
+    metroLightsEl.appendChild(light);
   }
 }
-buildBeatDots();
+buildMetroLights();
+updateBeatsDisplay();
 
 function flashBeat(beatIndex) {
-  const dots = beatDotsEl.querySelectorAll(".beat-dot");
-  dots.forEach((d) => d.classList.remove("active"));
-  if (dots[beatIndex]) {
-    dots[beatIndex].classList.add("active");
-    setTimeout(() => dots[beatIndex].classList.remove("active"), 100);
+  const lights = metroLightsEl.querySelectorAll(".metro-light");
+  lights.forEach((l) => l.classList.remove("lit"));
+  if (lights[beatIndex]) {
+    lights[beatIndex].classList.add("lit");
+    setTimeout(() => lights[beatIndex].classList.remove("lit"), 100);
   }
 }
 
@@ -292,25 +374,8 @@ function stopMetronome() {
   clearTimeout(metroTimerId);
   metroTimerId = null;
   metroIsPlaying = false;
-  beatDotsEl.querySelectorAll(".beat-dot").forEach((d) => d.classList.remove("active"));
+  metroLightsEl.querySelectorAll(".metro-light").forEach((l) => l.classList.remove("lit"));
 }
-
-bpmSlider.addEventListener("input", () => {
-  bpm = parseInt(bpmSlider.value, 10);
-  bpmValue.textContent = bpm + " BPM";
-  const pct = ((bpm - 40) / (208 - 40)) * 100;
-  bpmSlider.style.setProperty("--fill", pct + "%");
-});
-
-beatsSelect.addEventListener("click", (e) => {
-  const btn = e.target.closest(".beats-btn");
-  if (!btn) return;
-  beatsSelect.querySelectorAll(".beats-btn").forEach((b) => b.classList.remove("selected"));
-  btn.classList.add("selected");
-  beatsPerBar = parseInt(btn.dataset.beats, 10);
-  buildBeatDots();
-  currentBeat = 0;
-});
 
 // Tap tempo: average the gaps between the last few taps (up to 8),
 // discarding stale taps if the user pauses for more than 2 seconds.
@@ -328,28 +393,29 @@ tapTempoBtn.addEventListener("click", () => {
       intervals.push(tapTimes[i] - tapTimes[i - 1]);
     }
     const avgMs = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-    const tappedBpm = Math.round(60000 / avgMs);
-    bpm = Math.min(208, Math.max(40, tappedBpm));
-    bpmSlider.value = bpm;
-    bpmValue.textContent = bpm + " BPM";
-    const pct = ((bpm - 40) / (208 - 40)) * 100;
-    bpmSlider.style.setProperty("--fill", pct + "%");
+    setBpm(Math.round(60000 / avgMs));
   }
 });
+
+const PLAY_ICON = '<path d="M8 5v14l11-7Z" />';
+const STOP_ICON = '<rect x="6" y="6" width="12" height="12" rx="1.5" />';
 
 metroBtn.addEventListener("click", async () => {
   if (metroIsPlaying) {
     stopMetronome();
-    metroBtn.textContent = "♩ Start Metronome";
     metroBtn.classList.remove("playing");
     metroBtn.setAttribute("aria-pressed", "false");
+    metroBtn.setAttribute("aria-label", "Start metronome");
+    metroPlayIcon.innerHTML = PLAY_ICON;
   } else {
     await startMetronome();
-    metroBtn.textContent = "■ Stop Metronome";
     metroBtn.classList.add("playing");
     metroBtn.setAttribute("aria-pressed", "true");
+    metroBtn.setAttribute("aria-label", "Stop metronome");
+    metroPlayIcon.innerHTML = STOP_ICON;
   }
 });
+
 
 // ===== Madhyam Shruthi toggle =====
 const shruthiToggle = document.getElementById("shruthiToggle");
