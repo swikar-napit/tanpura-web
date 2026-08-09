@@ -1,5 +1,5 @@
 # 🎵 Web Tanpura
-> 🎶 *Your Digital Tanpura Drone — Practice Nepali Classical Music Anywhere*
+> 🎶 *Your Digital Tanpura Drone & Metronome — Practice Nepali Classical Music Anywhere*
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/swikar-napit/tanpura-web)
 ![GitHub stars](https://img.shields.io/github/stars/swikar-napit/tanpura-web?style=social)
@@ -34,11 +34,11 @@
 
 ## 📖 Introduction
 
-**Web Tanpura** is a browser-based tanpura drone player built for Nepali classical music students and performers.
+**Web Tanpura** is a browser-based practice companion built for Nepali classical music students and performers, pairing an authentic tanpura drone with a built-in metronome.
 
 A tanpura is a long-necked string instrument that provides a continuous harmonic drone — the sonic foundation of every Nepali classical music performance and riyaz session.
 
-This app brings that drone to your browser. Select your shruthi (pitch), toggle tuning mode, and let the drone hold the space while you practice.
+This app brings that drone to your browser, alongside a metronome to keep your taal steady. Select your shruthi (pitch), toggle tuning mode, dial in your tempo, and practice with both running side by side.
 
 > No app. No install. No login. Just open and play.
 
@@ -51,6 +51,11 @@ This app brings that drone to your browser. Select your shruthi (pitch), toggle 
 - 🔄 **Pancham & Madhyam Shruthi** — toggle between the two standard tanpura tuning modes
 - 🔁 **Seamless looping** — audio loops without any gap or click
 - 🔊 **Smooth volume control** — real-time gain slider
+- ⏱️ **Built-in metronome** — sample-accurate Web Audio scheduling, so tempo never drifts
+- 👆 **Tap tempo** — tap along and it works out your BPM automatically
+- 🎚️ **1–208 BPM range** with Italian tempo names (Largo, Andante, Allegro, Prestissimo, etc.)
+- 🔢 **Adjustable beats per bar** — from 1 to 16, with a lit accent on the downbeat
+- 💡 **Live beat lights** — visual pulse in sync with every click, so you can follow along without sound
 - 📱 **Fully responsive** — works on phones, tablets, and desktops
 - ⚡ **Zero dependencies** — pure HTML, CSS, and JavaScript, no frameworks
 
@@ -58,11 +63,12 @@ This app brings that drone to your browser. Select your shruthi (pitch), toggle 
 
 ## 🌟 Why This App?
 
-Musicians practicing Nepali classical music always need a tanpura drone running in the background. Physical tanpuras are expensive and not always available. Existing apps are either paid, require installation, or sound artificial.
+Musicians practicing Nepali classical music always need a tanpura drone — and a steady metronome — running in the background. Physical tanpuras are expensive and not always available, separate metronome apps mean switching between tools mid-practice, and existing options are either paid, require installation, or sound artificial.
 
 Web Tanpura solves that:
 
 - Real instrument recordings, not synthesis 🎵
+- Drone and metronome together, no app-switching ⏱️
 - Available 24/7 from any browser 🕐
 - Completely free and open source 💸
 - Works offline once loaded 📶
@@ -105,12 +111,17 @@ Then open `http://localhost:5500` in your browser.
 
 ## 🎹 Usage
 
+**Tanpura:**
+1. Select your **pitch** (Sa) from the grid
+2. Toggle **Madhyam Shruthi** if you need the 4th string drone instead of the 5th
+3. Hit **▶ Start** — the drone will begin playing
+4. Press **■ Stop** when your practice session is done
 
-1. Open the app
-2. Select your **pitch** (Sa) from the grid
-3. Toggle **Madhyam Shruthi** if you need the 4th string drone instead of the 5th
-4. Hit **▶ Start** — the drone will begin playing
-5. Press **■ Stop** when your practice session is done
+**Metronome:**
+1. Set your **tempo** with the `-1 / +1 / -5 / +5` step buttons, the slider, or **Tap Tempo**
+2. Choose **beats per bar** (1–16) — the downbeat lights up in a distinct color
+3. Press the **play button** to start the click, alongside the tanpura or on its own
+4. Press it again to stop
 
 ---
 
@@ -140,7 +151,7 @@ tanpura-web/
 - [x] Volume slider
 - [x] Mobile responsive design
 - [x] GitHub Pages deployment
-- [ ] Speed/tempo control
+- [x] Built-in metronome with tap tempo and adjustable beats per bar
 - [ ] Dark/light theme toggle
 - [ ] Offline PWA support
 
