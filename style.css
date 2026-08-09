@@ -8,9 +8,24 @@ body {
   background: radial-gradient(circle at 20% 0%, rgba(55, 154, 184, 0.22), transparent 34rem), #0b1728;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   min-height: 100vh;   /* fallback for older browsers */
   min-height: 100dvh;  /* accounts for mobile browser address bar showing/hiding */
   padding: 28px 16px;
+}
+
+.layout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  max-width: 920px;
+  width: 100%;
+}
+
+.layout .app {
+  flex: 1 1 440px;
 }
 
 .app {
@@ -250,8 +265,131 @@ input[type="range"]:focus-visible {
   background: linear-gradient(135deg, #1c4d8f, #123863);
 }
 
+.titlebar--metro {
+  background: linear-gradient(135deg, #8a5f16, #d8a13f 85%);
+}
+
+/* ===== Metronome ===== */
+.metro-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tap-btn {
+  appearance: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(243, 248, 251, 0.8);
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.tap-btn:hover {
+  border-color: #3fb6d8;
+  color: #3fb6d8;
+  background: rgba(63, 182, 216, 0.08);
+}
+
+.tap-btn:active {
+  transform: scale(0.96);
+}
+
+.beats-select {
+  display: flex;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.beats-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: rgba(243, 248, 251, 0.5);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.beats-btn:hover {
+  color: #3fb6d8;
+}
+
+.beats-btn.selected {
+  background: linear-gradient(135deg, #1c4d8f, #2896b0);
+  color: #fff;
+}
+
+.beat-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+  min-height: 14px;
+}
+
+.beat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  transition: transform 0.08s ease, background 0.08s ease;
+}
+
+.beat-dot.accent {
+  width: 12px;
+  height: 12px;
+}
+
+.beat-dot.active {
+  background: #3fb6d8;
+  transform: scale(1.3);
+}
+
+.beat-dot.accent.active {
+  background: #f3f8fb;
+}
+
+.metro-btn {
+  margin-top: 16px;
+  background: linear-gradient(135deg, #b8862f, #d8a13f);
+  color: #221703;
+}
+
+.metro-btn.playing {
+  color: #f3f8fb;
+  background: linear-gradient(135deg, #6b4a12, #8f6318);
+}
+
 @media (max-width: 380px) {
   body { padding: 12px; }
   .titlebar, .card { padding-left: 20px; padding-right: 20px; }
   .pitch-grid { gap: 7px; }
+  .metro-row { flex-wrap: wrap; }
+}
+
+@media (max-width: 920px) {
+  .layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .layout .app {
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 440px;
+  }
 }

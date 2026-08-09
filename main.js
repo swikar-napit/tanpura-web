@@ -203,6 +203,154 @@ transportBtn.addEventListener("click", async () => {
 getAudioContext();          // safe to create early; starts "suspended", that's fine
 preloadAllNotes("C");       // starts fetch+decode for all 24 files, "C" first
 
+// ===== Metronome =====
+// Uses the standard Web Audio "lookahead scheduler" pattern: a JS timer
+// wakes up frequently just to check the clock, but the actual click sounds
+// are scheduled against audioCtx.currentTime, which is sample-accurate and
+// immune to JS/UI thread jitter. This is what keeps tempo rock-solid even
+// if the tab is busy re-rendering something else.
+const bpmSlider    = document.getElementById("bpmSlider");
+const bpmValue     = document.getElementById("bpmValue");
+const tapTempoBtn  = document.getElementById("tapTempoBtn");
+const beatsSelect  = document.getElementById("beatsSelect");
+const beatDotsEl   = document.getElementById("beatDots");
+const metroBtn     = document.getElementById("metroBtn");
+
+const SCHEDULE_AHEAD_TIME = 0.1;  // seconds — how far ahead we schedule audio
+const LOOKAHEAD_INTERVAL  = 25;   // ms — how often the scheduler wakes up
+
+let bpm            = parseInt(bpmSlider.value, 10);
+let beatsPerBar     = 4;
+let metroIsPlaying = false;
+let metroTimerId   = null;
+let nextNoteTime   = 0;
+let currentBeat    = 0;
+let tapTimes       = [];
+
+function buildBeatDots() {
+  beatDotsEl.innerHTML = "";
+  for (let i = 0; i < beatsPerBar; i++) {
+    const dot = document.createElement("span");
+    dot.className = "beat-dot" + (i === 0 ? " accent" : "");
+    beatDotsEl.appendChild(dot);
+  }
+}
+buildBeatDots();
+
+function flashBeat(beatIndex) {
+  const dots = beatDotsEl.querySelectorAll(".beat-dot");
+  dots.forEach((d) => d.classList.remove("active"));
+  if (dots[beatIndex]) {
+    dots[beatIndex].classList.add("active");
+    setTimeout(() => dots[beatIndex].classList.remove("active"), 100);
+  }
+}
+
+// Short synthesized click — accented beat is higher pitched/louder.
+function scheduleClick(beatIndex, time) {
+  const ctx = getAudioContext();
+  const osc  = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  const isAccent = beatIndex === 0;
+  osc.frequency.value = isAccent ? 1500 : 1000;
+
+  gain.gain.setValueAtTime(0, time);
+  gain.gain.linearRampToValueAtTime(isAccent ? 0.9 : 0.55, time + 0.002);
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.06);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(time);
+  osc.stop(time + 0.07);
+
+  // Sync the visual flash to when the click actually sounds, not to "now".
+  const delayMs = Math.max(0, (time - ctx.currentTime) * 1000);
+  setTimeout(() => flashBeat(beatIndex), delayMs);
+}
+
+function metroScheduler() {
+  const ctx = getAudioContext();
+  while (nextNoteTime < ctx.currentTime + SCHEDULE_AHEAD_TIME) {
+    scheduleClick(currentBeat, nextNoteTime);
+    nextNoteTime += 60.0 / bpm;
+    currentBeat = (currentBeat + 1) % beatsPerBar;
+  }
+  metroTimerId = setTimeout(metroScheduler, LOOKAHEAD_INTERVAL);
+}
+
+async function startMetronome() {
+  const ctx = getAudioContext();
+  if (ctx.state === "suspended") await ctx.resume();
+  currentBeat  = 0;
+  nextNoteTime = ctx.currentTime + 0.05;
+  metroScheduler();
+  metroIsPlaying = true;
+}
+
+function stopMetronome() {
+  clearTimeout(metroTimerId);
+  metroTimerId = null;
+  metroIsPlaying = false;
+  beatDotsEl.querySelectorAll(".beat-dot").forEach((d) => d.classList.remove("active"));
+}
+
+bpmSlider.addEventListener("input", () => {
+  bpm = parseInt(bpmSlider.value, 10);
+  bpmValue.textContent = bpm + " BPM";
+  const pct = ((bpm - 40) / (208 - 40)) * 100;
+  bpmSlider.style.setProperty("--fill", pct + "%");
+});
+
+beatsSelect.addEventListener("click", (e) => {
+  const btn = e.target.closest(".beats-btn");
+  if (!btn) return;
+  beatsSelect.querySelectorAll(".beats-btn").forEach((b) => b.classList.remove("selected"));
+  btn.classList.add("selected");
+  beatsPerBar = parseInt(btn.dataset.beats, 10);
+  buildBeatDots();
+  currentBeat = 0;
+});
+
+// Tap tempo: average the gaps between the last few taps (up to 8),
+// discarding stale taps if the user pauses for more than 2 seconds.
+tapTempoBtn.addEventListener("click", () => {
+  const now = performance.now();
+  if (tapTimes.length && now - tapTimes[tapTimes.length - 1] > 2000) {
+    tapTimes = [];
+  }
+  tapTimes.push(now);
+  if (tapTimes.length > 8) tapTimes.shift();
+
+  if (tapTimes.length >= 2) {
+    const intervals = [];
+    for (let i = 1; i < tapTimes.length; i++) {
+      intervals.push(tapTimes[i] - tapTimes[i - 1]);
+    }
+    const avgMs = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+    const tappedBpm = Math.round(60000 / avgMs);
+    bpm = Math.min(208, Math.max(40, tappedBpm));
+    bpmSlider.value = bpm;
+    bpmValue.textContent = bpm + " BPM";
+    const pct = ((bpm - 40) / (208 - 40)) * 100;
+    bpmSlider.style.setProperty("--fill", pct + "%");
+  }
+});
+
+metroBtn.addEventListener("click", async () => {
+  if (metroIsPlaying) {
+    stopMetronome();
+    metroBtn.textContent = "♩ Start Metronome";
+    metroBtn.classList.remove("playing");
+    metroBtn.setAttribute("aria-pressed", "false");
+  } else {
+    await startMetronome();
+    metroBtn.textContent = "■ Stop Metronome";
+    metroBtn.classList.add("playing");
+    metroBtn.setAttribute("aria-pressed", "true");
+  }
+});
+
 // ===== Madhyam Shruthi toggle =====
 const shruthiToggle = document.getElementById("shruthiToggle");
 

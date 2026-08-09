@@ -9,38 +9,75 @@
 </head>
 <body>
 
-  <div class="app">
-    <header class="titlebar">
-      <p class="eyebrow">Practice companion</p>
-      <h1>Web Tanpura</h1>
-      <p>Set your shruthi, then let the drone hold the space.</p>
-    </header>
+  <div class="layout">
+    <div class="app">
+      <header class="titlebar">
+        <p class="eyebrow">Practice companion</p>
+        <h1>Web Tanpura</h1>
+        <p>Set your shruthi, then let the drone hold the space.</p>
+      </header>
 
-    <div class="card">
-      <div class="label"><label for="volSlider">Volume</label><span class="value" id="volValue">60%</span></div>
-      <input type="range" id="volSlider" min="0" max="100" value="60" style="--fill:60%" aria-label="Volume">
-    </div>
+      <div class="card">
+        <div class="label"><label for="volSlider">Volume</label><span class="value" id="volValue">60%</span></div>
+        <input type="range" id="volSlider" min="0" max="100" value="60" style="--fill:60%" aria-label="Volume">
+      </div>
 
-    <div class="card">
-      <div class="toggle-row">
-        <div>
-          <div class="name">Madhyam Shruthi</div>
-          <div class="sub">Switch tuning mode</div>
+      <div class="card">
+        <div class="toggle-row">
+          <div>
+            <div class="name">Madhyam Shruthi</div>
+            <div class="sub">Switch tuning mode</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="shruthiToggle" aria-label="Enable Madhyam Shruthi">
+            <span class="slider"></span>
+          </label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="shruthiToggle" aria-label="Enable Madhyam Shruthi">
-          <span class="slider"></span>
-        </label>
+      </div>
+
+      <div class="card">
+        <div class="label">Select Pitch <span class="value" id="selectedPitch">C</span></div>
+        <div class="pitch-grid" id="pitchGrid" role="group" aria-label="Select pitch"></div>
+      </div>
+
+      <div class="card">
+        <button class="transport-btn" id="transportBtn" aria-pressed="false">▶ Start</button>
       </div>
     </div>
 
-    <div class="card">
-      <div class="label">Select Pitch <span class="value" id="selectedPitch">C</span></div>
-      <div class="pitch-grid" id="pitchGrid" role="group" aria-label="Select pitch"></div>
-    </div>
+    <div class="app app--metro">
+      <header class="titlebar titlebar--metro">
+        <p class="eyebrow">Keep the taal</p>
+        <h1>Metronome</h1>
+        <p>Set your tempo and let it click alongside the drone.</p>
+      </header>
 
-    <div class="card">
-      <button class="transport-btn" id="transportBtn" aria-pressed="false">▶ Start</button>
+      <div class="card">
+        <div class="label">
+          Tempo
+          <span class="value" id="bpmValue">80 BPM</span>
+        </div>
+        <input type="range" id="bpmSlider" min="40" max="208" value="80" style="--fill:34%" aria-label="Tempo in beats per minute">
+      </div>
+
+      <div class="card">
+        <div class="metro-row">
+          <button type="button" class="tap-btn" id="tapTempoBtn">Tap Tempo</button>
+
+          <div class="beats-select" id="beatsSelect" role="group" aria-label="Beats per measure">
+            <button type="button" class="beats-btn" data-beats="2">2</button>
+            <button type="button" class="beats-btn" data-beats="3">3</button>
+            <button type="button" class="beats-btn selected" data-beats="4">4</button>
+            <button type="button" class="beats-btn" data-beats="6">6</button>
+          </div>
+        </div>
+
+        <div class="beat-dots" id="beatDots" aria-hidden="true"></div>
+      </div>
+
+      <div class="card">
+        <button class="transport-btn metro-btn" id="metroBtn" aria-pressed="false">♩ Start Metronome</button>
+      </div>
     </div>
   </div>
 
