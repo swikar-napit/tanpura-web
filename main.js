@@ -282,43 +282,78 @@ function setBpm(value) {
 }
 
 // Odometer-style roll: the old number slides out (up or down depending on
-// direction) while the new one slides in from the opposite edge. Used for
-// the step buttons, where each press is a discrete, felt change — not for
-// the slider, where continuous animation would just look noisy.
-function setBpmAnimated(value) {
-  const clamped = clamp(value, BPM_MIN, BPM_MAX);
-  if (clamped === bpm) return;
-  const direction = clamped > bpm ? 1 : -1; // 1 = rolling up, -1 = rolling down
-
-  // Clone the current number, stack it on top of the live one, and slide
-  // it out while the live element (already updated to the new value)
-  // slides in from the opposite side.
+// direction) while the new one slides in from the opposite edge. This is
+// the single-tick version — one call moves the display by exactly one
+// visual step, from `bpm` to `bpm + direction`.
+function bpmTick(direction) {
+  // ── Outgoing number ──────────────────────────────────────────────
+  // Clone the current displayed value into a leaving element sitting
+  // at translateY(0), then on the next frame slide it out so the CSS
+  // transition picks it up cleanly.
   const leaving = document.createElement("span");
   leaving.className = "bpm-main-leaving";
   leaving.textContent = bpmMainEl.textContent;
+  // Start at neutral position (no transition yet)
+  leaving.style.transition = "none";
+  leaving.style.transform = "translateY(0)";
+  leaving.style.opacity = "1";
   bpmMainWrap.appendChild(leaving);
 
-  requestAnimationFrame(() => {
-    leaving.style.transform = `translateY(${direction * -100}%)`;
-    leaving.style.opacity = "0";
-  });
-  leaving.addEventListener("transitionend", () => leaving.remove(), { once: true });
-  setTimeout(() => leaving.remove(), 400); // safety cleanup if transitionend doesn't fire
-
+  // ── Incoming number ──────────────────────────────────────────────
+  // Snap the main element to the "offscreen" start position
+  // (above for +, below for −) with transitions disabled, update
+  // the text, then re-enable transitions so it glides to center.
   bpmMainEl.style.transition = "none";
   bpmMainEl.style.transform = `translateY(${direction * 100}%)`;
   bpmMainEl.style.opacity = "0";
+  setBpm(bpm + direction);      // updates bpmMainEl.textContent
 
-  setBpm(clamped);
+  // One rAF to commit the "start" positions to the compositor,
+  // then a second rAF to kick off both animations simultaneously.
+  requestAnimationFrame(() => {
+    void bpmMainWrap.offsetWidth; // flush layout
 
-  // Force reflow so the "start" position above actually applies before
-  // we animate back to translateY(0) — otherwise the browser would batch
-  // both style changes together and skip the animation entirely.
-  void bpmMainEl.offsetWidth;
+    // Slide old number out
+    leaving.style.transition = "";   // restore CSS-defined transition
+    leaving.style.transform = `translateY(${direction * -100}%)`;
+    leaving.style.opacity = "0";
 
-  bpmMainEl.style.transition = "";
-  bpmMainEl.style.transform = "translateY(0)";
-  bpmMainEl.style.opacity = "1";
+    // Slide new number in
+    bpmMainEl.style.transition = ""; // restore CSS-defined transition
+    bpmMainEl.style.transform = "translateY(0)";
+    bpmMainEl.style.opacity = "1";
+  });
+
+  leaving.addEventListener("transitionend", () => leaving.remove(), { once: true });
+  setTimeout(() => leaving.remove(), 500); // safety cleanup
+}
+
+// Live rolling counter: steps through every intermediate value between the
+// current bpm and the target, one tick at a time, like a real odometer
+// spinning up/down rather than jumping straight to the new number. Speeds
+// up slightly the farther it has to travel so a +5 doesn't feel sluggish.
+let bpmRollTimer = null;
+
+function setBpmAnimated(value) {
+  const target = clamp(value, BPM_MIN, BPM_MAX);
+  clearTimeout(bpmRollTimer);
+
+  function step() {
+    if (bpm === target) {
+      bpmRollTimer = null;
+      return;
+    }
+    const remaining = Math.abs(target - bpm);
+    const direction = target > bpm ? 1 : -1;
+    bpmTick(direction);
+
+    // Faster ticks the more steps remain, but never so fast it stops
+    // reading as a roll.
+    const delay = remaining > 4 ? 38 : remaining > 2 ? 60 : 85;
+    bpmRollTimer = setTimeout(step, delay);
+  }
+
+  step();
 }
 
 updateBpmDisplay();

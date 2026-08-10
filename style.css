@@ -383,7 +383,8 @@ input[type="range"]:focus-visible {
   font-weight: 800;
   color: #f3f8fb;
   line-height: 1.05;
-  transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.3, 1), opacity 0.22s ease;
+  transition: transform 0.18s cubic-bezier(0.25, 1.4, 0.4, 1), opacity 0.14s ease;
+  will-change: transform, opacity;
 }
 
 .bpm-main-leaving {
@@ -396,8 +397,9 @@ input[type="range"]:focus-visible {
   font-weight: 800;
   color: #f3f8fb;
   line-height: 1.05;
-  transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.3, 1), opacity 0.22s ease;
+  transition: transform 0.16s cubic-bezier(0.4, 0, 0.8, 0.6), opacity 0.13s ease;
   pointer-events: none;
+  will-change: transform, opacity;
 }
 
 .bpm-slider-row {
