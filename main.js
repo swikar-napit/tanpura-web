@@ -210,7 +210,6 @@ preloadAllNotes("C");       // starts fetch+decode for all 24 files, "C" first
 // immune to JS/UI thread jitter. This is what keeps tempo rock-solid even
 // if the tab is busy re-rendering something else.
 const bpmSlider     = document.getElementById("bpmSlider");
-const bpmMainWrap   = document.getElementById("bpmMainWrap");
 const bpmMainEl     = document.getElementById("bpmMain");
 const bpmGhostUpEl  = document.getElementById("bpmGhostUp");
 const bpmGhostDnEl  = document.getElementById("bpmGhostDown");
@@ -266,72 +265,88 @@ function tempoNameFor(value) {
   return TEMPO_NAMES.find((t) => value <= t.max).name;
 }
 
-function updateBpmDisplay() {
-  bpmMainEl.textContent = bpm;
+function updateBpmDisplay(syncSlider = true) {
   bpmGhostUpEl.textContent = bpm > BPM_MIN ? bpm - 1 : "";
   bpmGhostDnEl.textContent = bpm < BPM_MAX ? bpm + 1 : "";
   tempoNameEl.textContent = tempoNameFor(bpm);
-  bpmSlider.value = bpm;
+  if (syncSlider) bpmSlider.value = bpm;
   const pct = ((bpm - BPM_MIN) / (BPM_MAX - BPM_MIN)) * 100;
   bpmSlider.style.setProperty("--fill", pct + "%");
 }
 
 function setBpm(value) {
   bpm = clamp(value, BPM_MIN, BPM_MAX);
+  renderBpmReels(bpm);
   updateBpmDisplay();
 }
 
-// Odometer-style roll: the old number slides out (up or down depending on
-// direction) while the new one slides in from the opposite edge. This is
-// the single-tick version — one call moves the display by exactly one
-// visual step, from `bpm` to `bpm + direction`.
-function bpmTick(direction) {
-  // ── Outgoing number ──────────────────────────────────────────────
-  // Clone the current displayed value into a leaving element sitting
-  // at translateY(0), then on the next frame slide it out so the CSS
-  // transition picks it up cleanly.
-  const leaving = document.createElement("span");
-  leaving.className = "bpm-main-leaving";
-  leaving.textContent = bpmMainEl.textContent;
-  // Start at neutral position (no transition yet)
-  leaving.style.transition = "none";
-  leaving.style.transform = "translateY(0)";
-  leaving.style.opacity = "1";
-  bpmMainWrap.appendChild(leaving);
+// Build three independent digit reels. Each reel contains 0–9 twice, so it
+// can cross 9 → 0 (or 0 → 9) without snapping visibly.
+const bpmDigitReels = [];
 
-  // ── Incoming number ──────────────────────────────────────────────
-  // Snap the main element to the "offscreen" start position
-  // (above for +, below for −) with transitions disabled, update
-  // the text, then re-enable transitions so it glides to center.
-  bpmMainEl.style.transition = "none";
-  bpmMainEl.style.transform = `translateY(${direction * 100}%)`;
-  bpmMainEl.style.opacity = "0";
-  setBpm(bpm + direction);      // updates bpmMainEl.textContent
+function createBpmDigitReel() {
+  const reel = document.createElement("span");
+  reel.className = "bpm-digit";
+  const track = document.createElement("span");
+  track.className = "bpm-digit-track";
 
-  // One rAF to commit the "start" positions to the compositor,
-  // then a second rAF to kick off both animations simultaneously.
-  requestAnimationFrame(() => {
-    void bpmMainWrap.offsetWidth; // flush layout
+  for (let i = 0; i < 30; i++) {
+    const digit = document.createElement("span");
+    digit.className = "bpm-digit-value";
+    digit.textContent = i % 10;
+    track.appendChild(digit);
+  }
 
-    // Slide old number out
-    leaving.style.transition = "";   // restore CSS-defined transition
-    leaving.style.transform = `translateY(${direction * -100}%)`;
-    leaving.style.opacity = "0";
+  reel.appendChild(track);
+  bpmMainEl.appendChild(reel);
+  return { reel, track, value: 0 };
+}
 
-    // Slide new number in
-    bpmMainEl.style.transition = ""; // restore CSS-defined transition
-    bpmMainEl.style.transform = "translateY(0)";
-    bpmMainEl.style.opacity = "1";
+for (let i = 0; i < 3; i++) bpmDigitReels.push(createBpmDigitReel());
+
+function renderBpmReels(value, direction = 0, animate = false) {
+  const digits = String(value).padStart(3, "0").split("").map(Number);
+  const visibleFrom = value >= 100 ? 0 : 1;
+
+  bpmDigitReels.forEach((digitReel, index) => {
+    const next = digits[index];
+    digitReel.reel.classList.toggle("bpm-digit--hidden", index < visibleFrom);
+
+    if (!animate || next === digitReel.value) {
+      digitReel.track.style.transition = "none";
+      digitReel.track.style.transform = `translateY(${-((10 + next) * 1.05)}em)`;
+      digitReel.value = next;
+      return;
+    }
+
+    // One BPM tick changes each wheel by at most one position. Moving from
+    // 9 to 0 (or 0 to 9) uses the adjacent duplicate instead of jumping.
+    const nextPosition = 10 + digitReel.value + direction;
+    digitReel.track.style.transition = "none";
+    digitReel.track.style.transform = `translateY(${-((10 + digitReel.value) * 1.05)}em)`;
+    requestAnimationFrame(() => {
+      void digitReel.track.offsetHeight;
+      digitReel.track.style.transition = "";
+      digitReel.track.style.transform = `translateY(${-(nextPosition * 1.05)}em)`;
+    });
+    digitReel.value = next;
   });
+  bpmMainEl.setAttribute("aria-label", `${value} beats per minute`);
+}
 
-  leaving.addEventListener("transitionend", () => leaving.remove(), { once: true });
-  setTimeout(() => leaving.remove(), 500); // safety cleanup
+renderBpmReels(bpm);
+
+// Advance one BPM at a time, allowing every digit wheel to roll with carries.
+function bpmTick(direction) {
+  const nextValue = bpm + direction;
+  bpm = clamp(nextValue, BPM_MIN, BPM_MAX);
+  renderBpmReels(bpm, direction, true);
+  updateBpmDisplay(false);
 }
 
 // Live rolling counter: steps through every intermediate value between the
 // current bpm and the target, one tick at a time, like a real odometer
-// spinning up/down rather than jumping straight to the new number. Speeds
-// up slightly the farther it has to travel so a +5 doesn't feel sluggish.
+// spinning up/down rather than jumping straight to the new number.
 let bpmRollTimer = null;
 
 function setBpmAnimated(value) {
@@ -341,15 +356,14 @@ function setBpmAnimated(value) {
   function step() {
     if (bpm === target) {
       bpmRollTimer = null;
+      updateBpmDisplay();
       return;
     }
-    const remaining = Math.abs(target - bpm);
     const direction = target > bpm ? 1 : -1;
     bpmTick(direction);
 
-    // Faster ticks the more steps remain, but never so fast it stops
-    // reading as a roll.
-    const delay = remaining > 4 ? 38 : remaining > 2 ? 60 : 85;
+    // Let each wheel complete its travel before advancing to the next value.
+    const delay = 170;
     bpmRollTimer = setTimeout(step, delay);
   }
 
@@ -359,7 +373,7 @@ function setBpmAnimated(value) {
 updateBpmDisplay();
 
 bpmSlider.addEventListener("input", () => {
-  setBpm(parseInt(bpmSlider.value, 10));
+  setBpmAnimated(parseInt(bpmSlider.value, 10));
 });
 
 bpmMinus1Btn.addEventListener("click", () => setBpmAnimated(bpm - 1));

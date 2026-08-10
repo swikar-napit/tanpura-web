@@ -373,33 +373,39 @@ input[type="range"]:focus-visible {
   justify-content: center;
 }
 
-.bpm-main {
-  position: absolute;
-  inset: 0;
+.bpm-reels {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
   font-size: 3.2rem;
   font-weight: 800;
   color: #f3f8fb;
   line-height: 1.05;
-  transition: transform 0.18s cubic-bezier(0.25, 1.4, 0.4, 1), opacity 0.14s ease;
-  will-change: transform, opacity;
+  font-variant-numeric: tabular-nums;
 }
 
-.bpm-main-leaving {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3.2rem;
-  font-weight: 800;
-  color: #f3f8fb;
+.bpm-digit {
+  width: 0.64em;
+  height: 1.05em;
+  overflow: hidden;
+}
+
+.bpm-digit--hidden {
+  display: none;
+}
+
+.bpm-digit-track {
+  display: block;
+  will-change: transform;
+  transition: transform 0.18s cubic-bezier(0.22, 0.9, 0.32, 1.12);
+}
+
+.bpm-digit-value {
+  display: block;
+  height: 1.05em;
   line-height: 1.05;
-  transition: transform 0.16s cubic-bezier(0.4, 0, 0.8, 0.6), opacity 0.13s ease;
-  pointer-events: none;
-  will-change: transform, opacity;
+  text-align: center;
 }
 
 .bpm-slider-row {
@@ -546,7 +552,7 @@ input[type="range"]:focus-visible {
   .titlebar, .card { padding-left: 20px; padding-right: 20px; }
   .pitch-grid { gap: 7px; }
   .bpm-block { gap: 12px; }
-  .bpm-main, .bpm-main-leaving { font-size: 2.5rem; }
+  .bpm-reels { font-size: 2.5rem; }
   .bpm-main-wrap { height: 2.7rem; }
   .bpm-step { width: 40px; }
 }
