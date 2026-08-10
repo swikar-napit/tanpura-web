@@ -210,6 +210,7 @@ preloadAllNotes("C");       // starts fetch+decode for all 24 files, "C" first
 // immune to JS/UI thread jitter. This is what keeps tempo rock-solid even
 // if the tab is busy re-rendering something else.
 const bpmSlider     = document.getElementById("bpmSlider");
+const bpmMainWrap   = document.getElementById("bpmMainWrap");
 const bpmMainEl     = document.getElementById("bpmMain");
 const bpmGhostUpEl  = document.getElementById("bpmGhostUp");
 const bpmGhostDnEl  = document.getElementById("bpmGhostDown");
@@ -276,71 +277,37 @@ function updateBpmDisplay(syncSlider = true) {
 
 function setBpm(value) {
   bpm = clamp(value, BPM_MIN, BPM_MAX);
-  renderBpmReels(bpm);
+  bpmMainEl.textContent = bpm;
+  bpmMainEl.setAttribute("aria-label", `${bpm} beats per minute`);
   updateBpmDisplay();
 }
 
-// Build three independent digit reels. Each reel contains 0–9 twice, so it
-// can cross 9 → 0 (or 0 → 9) without snapping visibly.
-const bpmDigitReels = [];
-
-function createBpmDigitReel() {
-  const reel = document.createElement("span");
-  reel.className = "bpm-digit";
-  const track = document.createElement("span");
-  track.className = "bpm-digit-track";
-
-  for (let i = 0; i < 30; i++) {
-    const digit = document.createElement("span");
-    digit.className = "bpm-digit-value";
-    digit.textContent = i % 10;
-    track.appendChild(digit);
-  }
-
-  reel.appendChild(track);
-  bpmMainEl.appendChild(reel);
-  return { reel, track, value: 0 };
-}
-
-for (let i = 0; i < 3; i++) bpmDigitReels.push(createBpmDigitReel());
-
-function renderBpmReels(value, direction = 0, animate = false) {
-  const digits = String(value).padStart(3, "0").split("").map(Number);
-  const visibleFrom = value >= 100 ? 0 : 1;
-
-  bpmDigitReels.forEach((digitReel, index) => {
-    const next = digits[index];
-    digitReel.reel.classList.toggle("bpm-digit--hidden", index < visibleFrom);
-
-    if (!animate || next === digitReel.value) {
-      digitReel.track.style.transition = "none";
-      digitReel.track.style.transform = `translateY(${-((10 + next) * 1.05)}em)`;
-      digitReel.value = next;
-      return;
-    }
-
-    // One BPM tick changes each wheel by at most one position. Moving from
-    // 9 to 0 (or 0 to 9) uses the adjacent duplicate instead of jumping.
-    const nextPosition = 10 + digitReel.value + direction;
-    digitReel.track.style.transition = "none";
-    digitReel.track.style.transform = `translateY(${-((10 + digitReel.value) * 1.05)}em)`;
-    requestAnimationFrame(() => {
-      void digitReel.track.offsetHeight;
-      digitReel.track.style.transition = "";
-      digitReel.track.style.transform = `translateY(${-(nextPosition * 1.05)}em)`;
-    });
-    digitReel.value = next;
-  });
-  bpmMainEl.setAttribute("aria-label", `${value} beats per minute`);
-}
-
-renderBpmReels(bpm);
-
-// Advance one BPM at a time, allowing every digit wheel to roll with carries.
+// Advance the entire BPM value one line at a time: 90 → 91 → 92, etc.
 function bpmTick(direction) {
-  const nextValue = bpm + direction;
-  bpm = clamp(nextValue, BPM_MIN, BPM_MAX);
-  renderBpmReels(bpm, direction, true);
+  const leaving = document.createElement("span");
+  leaving.className = "bpm-main-leaving";
+  leaving.textContent = bpm;
+  leaving.style.transition = "none";
+  bpmMainWrap.appendChild(leaving);
+
+  bpm = clamp(bpm + direction, BPM_MIN, BPM_MAX);
+  bpmMainEl.style.transition = "none";
+  bpmMainEl.style.transform = `translateY(${direction * 100}%)`;
+  bpmMainEl.style.opacity = "0";
+  bpmMainEl.textContent = bpm;
+  bpmMainEl.setAttribute("aria-label", `${bpm} beats per minute`);
+
+  requestAnimationFrame(() => {
+    void bpmMainWrap.offsetHeight;
+    leaving.style.transition = "";
+    leaving.style.transform = `translateY(${direction * -100}%)`;
+    leaving.style.opacity = "0";
+    bpmMainEl.style.transition = "";
+    bpmMainEl.style.transform = "translateY(0)";
+    bpmMainEl.style.opacity = "1";
+  });
+  leaving.addEventListener("transitionend", () => leaving.remove(), { once: true });
+  setTimeout(() => leaving.remove(), 400);
   updateBpmDisplay(false);
 }
 
