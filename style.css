@@ -388,20 +388,25 @@ input[type="range"]:focus-visible {
   will-change: transform, opacity;
 }
 
-.bpm-main-leaving {
+.bpm-roll-track {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 0;
+  left: 0;
+  width: 100%;
   font-size: 3.2rem;
   font-weight: 800;
   color: #f3f8fb;
   line-height: 1.05;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
-  transition: transform 0.14s ease-in, opacity 0.12s ease;
   will-change: transform, opacity;
+}
+
+.bpm-roll-track span {
+  height: 3.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bpm-slider-row {
@@ -548,7 +553,8 @@ input[type="range"]:focus-visible {
   .titlebar, .card { padding-left: 20px; padding-right: 20px; }
   .pitch-grid { gap: 7px; }
   .bpm-block { gap: 12px; }
-  .bpm-main, .bpm-main-leaving { font-size: 2.5rem; }
+  .bpm-main, .bpm-roll-track { font-size: 2.5rem; }
+  .bpm-roll-track span { height: 2.7rem; }
   .bpm-main-wrap { height: 2.7rem; }
   .bpm-step { width: 40px; }
 }

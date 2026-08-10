@@ -276,65 +276,68 @@ function updateBpmDisplay(syncSlider = true) {
 }
 
 function setBpm(value) {
+  cancelBpmRoll();
   bpm = clamp(value, BPM_MIN, BPM_MAX);
   bpmMainEl.textContent = bpm;
   bpmMainEl.setAttribute("aria-label", `${bpm} beats per minute`);
   updateBpmDisplay();
 }
 
-// Advance the entire BPM value one line at a time: 90 → 91 → 92, etc.
-function bpmTick(direction) {
-  const leaving = document.createElement("span");
-  leaving.className = "bpm-main-leaving";
-  leaving.textContent = bpm;
-  leaving.style.transition = "none";
-  bpmMainWrap.appendChild(leaving);
+// One continuously moving strip, rather than separate animations per BPM.
+// A +5 therefore glides through 85, 86, 87, 88, 89 and 90 without pausing.
+let bpmRollEl = null;
 
-  bpm = clamp(bpm + direction, BPM_MIN, BPM_MAX);
-  bpmMainEl.style.transition = "none";
-  bpmMainEl.style.transform = `translateY(${direction * 100}%)`;
-  bpmMainEl.style.opacity = "0";
-  bpmMainEl.textContent = bpm;
-  bpmMainEl.setAttribute("aria-label", `${bpm} beats per minute`);
-
-  requestAnimationFrame(() => {
-    void bpmMainWrap.offsetHeight;
-    leaving.style.transition = "";
-    leaving.style.transform = `translateY(${direction * -100}%)`;
-    leaving.style.opacity = "0";
-    bpmMainEl.style.transition = "";
-    bpmMainEl.style.transform = "translateY(0)";
-    bpmMainEl.style.opacity = "1";
-  });
-  leaving.addEventListener("transitionend", () => leaving.remove(), { once: true });
-  setTimeout(() => leaving.remove(), 400);
-  updateBpmDisplay(false);
+function cancelBpmRoll() {
+  if (!bpmRollEl) return;
+  bpmRollEl.remove();
+  bpmRollEl = null;
+  bpmMainEl.style.opacity = "1";
 }
-
-// Live rolling counter: steps through every intermediate value between the
-// current bpm and the target, one tick at a time, like a real odometer
-// spinning up/down rather than jumping straight to the new number.
-let bpmRollTimer = null;
 
 function setBpmAnimated(value) {
   const target = clamp(value, BPM_MIN, BPM_MAX);
-  clearTimeout(bpmRollTimer);
+  if (target === bpm) return;
 
-  function step() {
-    if (bpm === target) {
-      bpmRollTimer = null;
-      updateBpmDisplay();
-      return;
-    }
-    const direction = target > bpm ? 1 : -1;
-    bpmTick(direction);
+  cancelBpmRoll();
+  const start = bpm;
+  const direction = target > start ? 1 : -1;
+  const steps = Math.abs(target - start);
+  const values = Array.from({ length: steps + 1 }, (_, index) => start + (index * direction));
+  const roll = document.createElement("span");
+  roll.className = "bpm-roll-track";
+  roll.innerHTML = values.map((number) => `<span>${number}</span>`).join("");
+  bpmMainWrap.appendChild(roll);
+  bpmRollEl = roll;
 
-    // Let each wheel complete its travel before advancing to the next value.
-    const delay = 170;
-    bpmRollTimer = setTimeout(step, delay);
-  }
+  bpmMainEl.style.opacity = "0";
+  bpm = target;
+  bpmMainEl.textContent = bpm;
+  bpmMainEl.setAttribute("aria-label", `${bpm} beats per minute`);
+  updateBpmDisplay();
 
-  step();
+  const distance = steps * bpmMainWrap.clientHeight;
+  const duration = Math.max(220, steps * 95);
+  requestAnimationFrame(() => {
+    if (bpmRollEl !== roll) return;
+    roll.style.transition = `transform ${duration}ms linear`;
+    roll.style.transform = `translateY(${-distance}px)`;
+  });
+
+  roll.addEventListener("transitionend", () => {
+    if (bpmRollEl !== roll) return;
+    roll.remove();
+    bpmRollEl = null;
+    bpmMainEl.style.opacity = "1";
+  }, { once: true });
+
+  // Reduced-motion preferences or an interrupted browser animation should
+  // never leave the main number hidden.
+  setTimeout(() => {
+    if (bpmRollEl !== roll) return;
+    roll.remove();
+    bpmRollEl = null;
+    bpmMainEl.style.opacity = "1";
+  }, duration + 100);
 }
 
 updateBpmDisplay();
