@@ -210,6 +210,7 @@ preloadAllNotes("C");       // starts fetch+decode for all 24 files, "C" first
 // immune to JS/UI thread jitter. This is what keeps tempo rock-solid even
 // if the tab is busy re-rendering something else.
 const bpmSlider     = document.getElementById("bpmSlider");
+const bpmMainWrap   = document.getElementById("bpmMainWrap");
 const bpmMainEl     = document.getElementById("bpmMain");
 const bpmGhostUpEl  = document.getElementById("bpmGhostUp");
 const bpmGhostDnEl  = document.getElementById("bpmGhostDown");
@@ -280,16 +281,56 @@ function setBpm(value) {
   updateBpmDisplay();
 }
 
+// Odometer-style roll: the old number slides out (up or down depending on
+// direction) while the new one slides in from the opposite edge. Used for
+// the step buttons, where each press is a discrete, felt change — not for
+// the slider, where continuous animation would just look noisy.
+function setBpmAnimated(value) {
+  const clamped = clamp(value, BPM_MIN, BPM_MAX);
+  if (clamped === bpm) return;
+  const direction = clamped > bpm ? 1 : -1; // 1 = rolling up, -1 = rolling down
+
+  // Clone the current number, stack it on top of the live one, and slide
+  // it out while the live element (already updated to the new value)
+  // slides in from the opposite side.
+  const leaving = document.createElement("span");
+  leaving.className = "bpm-main-leaving";
+  leaving.textContent = bpmMainEl.textContent;
+  bpmMainWrap.appendChild(leaving);
+
+  requestAnimationFrame(() => {
+    leaving.style.transform = `translateY(${direction * -100}%)`;
+    leaving.style.opacity = "0";
+  });
+  leaving.addEventListener("transitionend", () => leaving.remove(), { once: true });
+  setTimeout(() => leaving.remove(), 400); // safety cleanup if transitionend doesn't fire
+
+  bpmMainEl.style.transition = "none";
+  bpmMainEl.style.transform = `translateY(${direction * 100}%)`;
+  bpmMainEl.style.opacity = "0";
+
+  setBpm(clamped);
+
+  // Force reflow so the "start" position above actually applies before
+  // we animate back to translateY(0) — otherwise the browser would batch
+  // both style changes together and skip the animation entirely.
+  void bpmMainEl.offsetWidth;
+
+  bpmMainEl.style.transition = "";
+  bpmMainEl.style.transform = "translateY(0)";
+  bpmMainEl.style.opacity = "1";
+}
+
 updateBpmDisplay();
 
 bpmSlider.addEventListener("input", () => {
   setBpm(parseInt(bpmSlider.value, 10));
 });
 
-bpmMinus1Btn.addEventListener("click", () => setBpm(bpm - 1));
-bpmPlus1Btn.addEventListener("click", () => setBpm(bpm + 1));
-bpmMinus5Btn.addEventListener("click", () => setBpm(bpm - 5));
-bpmPlus5Btn.addEventListener("click", () => setBpm(bpm + 5));
+bpmMinus1Btn.addEventListener("click", () => setBpmAnimated(bpm - 1));
+bpmPlus1Btn.addEventListener("click", () => setBpmAnimated(bpm + 1));
+bpmMinus5Btn.addEventListener("click", () => setBpmAnimated(bpm - 5));
+bpmPlus5Btn.addEventListener("click", () => setBpmAnimated(bpm + 5));
 
 // Beats per bar: simple 1-16 stepper.
 function updateBeatsDisplay() {

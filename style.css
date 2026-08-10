@@ -363,11 +363,41 @@ input[type="range"]:focus-visible {
   height: 1.3em;
 }
 
+.bpm-main-wrap {
+  position: relative;
+  width: 100%;
+  height: 3.4rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .bpm-main {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 3.2rem;
   font-weight: 800;
   color: #f3f8fb;
   line-height: 1.05;
+  transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.3, 1), opacity 0.22s ease;
+}
+
+.bpm-main-leaving {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.2rem;
+  font-weight: 800;
+  color: #f3f8fb;
+  line-height: 1.05;
+  transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.3, 1), opacity 0.22s ease;
+  pointer-events: none;
 }
 
 .bpm-slider-row {
@@ -514,7 +544,8 @@ input[type="range"]:focus-visible {
   .titlebar, .card { padding-left: 20px; padding-right: 20px; }
   .pitch-grid { gap: 7px; }
   .bpm-block { gap: 12px; }
-  .bpm-main { font-size: 2.5rem; }
+  .bpm-main, .bpm-main-leaving { font-size: 2.5rem; }
+  .bpm-main-wrap { height: 2.7rem; }
   .bpm-step { width: 40px; }
 }
 
