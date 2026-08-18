@@ -150,6 +150,7 @@ NOTES.forEach(note => {
 
     if (isPlaying) {
       transportBtn.textContent = "… Loading";
+      transportBtn.disabled = true;
       try {
         await startTanpura(selectedNote);
         transportBtn.textContent = "■ Stop";
@@ -160,6 +161,8 @@ NOTES.forEach(note => {
         transportBtn.classList.remove("playing");
         transportBtn.setAttribute("aria-pressed", "false");
         alert(`Could not load audio for ${note}. Make sure audio/${NOTE_FILE[note]}.wav exists.`);
+      } finally {
+        transportBtn.disabled = false;
       }
     }
   });
@@ -461,6 +464,8 @@ const PLAY_ICON = '<path d="M8 5v14l11-7Z" />';
 const STOP_ICON = '<rect x="6" y="6" width="12" height="12" rx="1.5" />';
 
 metroBtn.addEventListener("click", async () => {
+  if (metroBtn.disabled) return;
+
   if (metroIsPlaying) {
     stopMetronome();
     metroBtn.classList.remove("playing");
@@ -468,11 +473,16 @@ metroBtn.addEventListener("click", async () => {
     metroBtn.setAttribute("aria-label", "Start metronome");
     metroPlayIcon.innerHTML = PLAY_ICON;
   } else {
-    await startMetronome();
-    metroBtn.classList.add("playing");
-    metroBtn.setAttribute("aria-pressed", "true");
-    metroBtn.setAttribute("aria-label", "Stop metronome");
-    metroPlayIcon.innerHTML = STOP_ICON;
+    metroBtn.disabled = true;
+    try {
+      await startMetronome();
+      metroBtn.classList.add("playing");
+      metroBtn.setAttribute("aria-pressed", "true");
+      metroBtn.setAttribute("aria-label", "Stop metronome");
+      metroPlayIcon.innerHTML = STOP_ICON;
+    } finally {
+      metroBtn.disabled = false;
+    }
   }
 });
 
@@ -483,6 +493,7 @@ const shruthiToggle = document.getElementById("shruthiToggle");
 shruthiToggle.addEventListener("change", async () => {
   if (isPlaying) {
     transportBtn.textContent = "… Loading";
+    transportBtn.disabled = true;
     try {
       await startTanpura(selectedNote);
       transportBtn.textContent = "■ Stop";
@@ -492,6 +503,8 @@ shruthiToggle.addEventListener("change", async () => {
       transportBtn.textContent = "▶ Start";
       transportBtn.classList.remove("playing");
       transportBtn.setAttribute("aria-pressed", "false");
+    } finally {
+      transportBtn.disabled = false;
     }
   }
 });
