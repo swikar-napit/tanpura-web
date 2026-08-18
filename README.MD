@@ -166,4 +166,7 @@ MIT — free to use, modify, and share.
 ## 👨‍💻 Author
 
 **Swikar Napit**
-- GitHub: [@swikar-napit](https://github.com/swikar-napit)
+- 🌐 Website: [swikarnapit.com.np](https://swikarnapit.com.np)
+- 💻 GitHub: [@swikar-napit](https://github.com/swikar-napit)
+- 🔗 LinkedIn: [swikar-napit](https://www.linkedin.com/in/swikar-napit-819b9b414/)
+- 📧 Email: napit.swikar1@gmail.com
