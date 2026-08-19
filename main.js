@@ -219,6 +219,26 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// ===== Keyboard shortcut: "M" toggles metronome start/stop =====
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "m" && e.key !== "M") return;
+
+  const tag = document.activeElement?.tagName;
+  const isFocusableControl =
+    tag === "BUTTON" ||
+    tag === "INPUT" ||
+    tag === "TEXTAREA" ||
+    tag === "SELECT" ||
+    document.activeElement?.isContentEditable;
+
+  if (isFocusableControl) return;
+
+  e.preventDefault();
+  if (!metroBtn.disabled) {
+    metroBtn.click();
+  }
+});
+
 // ===== Background preload =====
 // Fetching + decodeAudioData do NOT require a user gesture — only actually
 // starting sound output does. So we kick off preloading immediately when the
