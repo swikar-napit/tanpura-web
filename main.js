@@ -197,6 +197,52 @@ transportBtn.addEventListener("click", async () => {
   }
 });
 
+// ===== Theme switcher (Light / System / Dark) =====
+(function () {
+  const THEME_KEY = "theme";
+  const root = document.documentElement;
+  const lightBtn = document.getElementById("themeLightBtn");
+  const systemBtn = document.getElementById("themeSystemBtn");
+  const darkBtn = document.getElementById("themeDarkBtn");
+  const btns = { light: lightBtn, system: systemBtn, dark: darkBtn };
+  const mql = window.matchMedia("(prefers-color-scheme: light)");
+
+  function getSavedChoice() {
+    try {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === "light" || saved === "dark") return saved;
+    } catch (e) {}
+    return "system"; // default
+  }
+
+  function applyChoice(choice) {
+    if (choice === "system") {
+      root.removeAttribute("data-theme");
+      try { localStorage.removeItem(THEME_KEY); } catch (e) {}
+    } else {
+      root.setAttribute("data-theme", choice);
+      try { localStorage.setItem(THEME_KEY, choice); } catch (e) {}
+    }
+
+    Object.entries(btns).forEach(([key, btn]) => {
+      const isActive = key === choice;
+      btn.classList.toggle("active", isActive);
+      btn.setAttribute("aria-pressed", String(isActive));
+    });
+  }
+
+  lightBtn.addEventListener("click", () => applyChoice("light"));
+  systemBtn.addEventListener("click", () => applyChoice("system"));
+  darkBtn.addEventListener("click", () => applyChoice("dark"));
+
+  // Keep the UI in sync if the OS theme changes while in "system" mode.
+  mql.addEventListener("change", () => {
+    if (getSavedChoice() === "system") applyChoice("system");
+  });
+
+  applyChoice(getSavedChoice());
+})();
+
 // ===== Keyboard shortcut: Spacebar toggles tanpura start/stop =====
 document.addEventListener("keydown", (e) => {
   if (e.code !== "Space" && e.key !== " ") return;

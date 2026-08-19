@@ -6,10 +6,42 @@
   <title>Web Tanpura</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+  <script>
+    // Apply saved theme before first paint to avoid a flash of the wrong theme.
+    (function () {
+      try {
+        var saved = localStorage.getItem("theme"); // "light" | "dark" | null (= system)
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-theme", saved);
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
 
   <div class="layout">
+    <div class="theme-switcher" role="group" aria-label="Theme">
+      <button type="button" class="theme-switcher-btn" id="themeLightBtn" data-theme-choice="light" aria-label="Light theme" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+        </svg>
+      </button>
+      <button type="button" class="theme-switcher-btn" id="themeSystemBtn" data-theme-choice="system" aria-label="System theme" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+          <path d="M8 21h8M12 17v4"></path>
+        </svg>
+      </button>
+      <button type="button" class="theme-switcher-btn" id="themeDarkBtn" data-theme-choice="dark" aria-label="Dark theme" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="layout-row">
     <div class="app">
       <header class="titlebar">
         <p class="eyebrow">Practice companion</p>
@@ -110,6 +142,7 @@
           <svg viewBox="0 0 24 24" fill="currentColor" id="metroPlayIcon"><path d="M8 5v14l11-7Z" /></svg>
         </button>
       </div>
+    </div>
     </div>
   </div>
 

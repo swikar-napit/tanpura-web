@@ -2,46 +2,284 @@
   box-sizing: border-box;
 }
 
+:root {
+  color-scheme: dark;
+
+  --bg-page-radial: rgba(55, 154, 184, 0.22);
+  --bg-page: #0b1728;
+
+  --app-bg: #142236;
+  --app-border: rgba(255, 255, 255, 0.06);
+  --app-shadow: 0 22px 56px rgba(0, 0, 0, 0.28);
+
+  --text-primary: #f3f8fb;
+  --text-secondary-80: rgba(243, 248, 251, 0.8);
+  --text-secondary-70: rgba(243, 248, 251, 0.7);
+  --text-secondary-50: rgba(243, 248, 251, 0.5);
+  --text-secondary-45: rgba(243, 248, 251, 0.45);
+  --text-secondary-14: rgba(243, 248, 251, 0.14);
+  --text-secondary-10: rgba(243, 248, 251, 0.1);
+
+  --accent: #3fb6d8;
+  --accent-15: rgba(63, 182, 216, 0.15);
+  --accent-10: rgba(63, 182, 216, 0.1);
+  --accent-08: rgba(63, 182, 216, 0.08);
+  --accent-dark: #1c4d8f;
+  --accent-teal: #2896b0;
+
+  --card-border: rgba(255, 255, 255, 0.05);
+
+  --track-bg: rgba(255, 255, 255, 0.12);
+  --switch-bg: rgba(255, 255, 255, 0.1);
+
+  --control-border: rgba(255, 255, 255, 0.15);
+  --control-border-soft: rgba(255, 255, 255, 0.08);
+  --control-bg-soft: rgba(255, 255, 255, 0.03);
+
+  --focus-ring: rgba(96, 207, 235, 0.75);
+
+  --transport-text: #0e1b2e;
+
+  --metro-titlebar-1: #8a5f16;
+  --metro-titlebar-2: #d8a13f;
+
+  --metro-light-off-1: #4a3a1a;
+  --metro-light-off-2: #2a2210;
+  --metro-light-accent-off-1: #5a2b1a;
+  --metro-light-accent-off-2: #33150c;
+
+  --metro-play-1: #ff8a4c;
+  --metro-play-2: #ff6a3d;
+  --metro-play-text: #221703;
+  --metro-play-playing-1: #3a3f47;
+  --metro-play-playing-2: #23272d;
+
+  --theme-switcher-bg: rgba(255, 255, 255, 0.06);
+  --theme-switcher-border: rgba(255, 255, 255, 0.1);
+  --theme-switcher-icon: rgba(243, 248, 251, 0.55);
+  --theme-switcher-active-bg: linear-gradient(135deg, #1c4d8f, #3fb6d8);
+  --theme-switcher-active-icon: #f3f8fb;
+}
+
+/* ===== Light theme ===== */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-page-radial: rgba(63, 182, 216, 0.16);
+  --bg-page: #eef3f8;
+
+  --app-bg: #ffffff;
+  --app-border: rgba(15, 35, 60, 0.08);
+  --app-shadow: 0 22px 46px rgba(20, 45, 80, 0.12);
+
+  --text-primary: #10202f;
+  --text-secondary-80: rgba(16, 32, 47, 0.75);
+  --text-secondary-70: rgba(16, 32, 47, 0.65);
+  --text-secondary-50: rgba(16, 32, 47, 0.5);
+  --text-secondary-45: rgba(16, 32, 47, 0.45);
+  --text-secondary-14: rgba(16, 32, 47, 0.16);
+  --text-secondary-10: rgba(16, 32, 47, 0.12);
+
+  --accent: #1c8bab;
+  --accent-15: rgba(28, 139, 171, 0.13);
+  --accent-10: rgba(28, 139, 171, 0.09);
+  --accent-08: rgba(28, 139, 171, 0.08);
+  --accent-dark: #1c4d8f;
+  --accent-teal: #2896b0;
+
+  --card-border: rgba(15, 35, 60, 0.07);
+
+  --track-bg: rgba(15, 35, 60, 0.1);
+  --switch-bg: rgba(15, 35, 60, 0.12);
+
+  --control-border: rgba(15, 35, 60, 0.14);
+  --control-border-soft: rgba(15, 35, 60, 0.1);
+  --control-bg-soft: rgba(15, 35, 60, 0.03);
+
+  --focus-ring: rgba(28, 139, 171, 0.55);
+
+  --transport-text: #ffffff;
+
+  --metro-titlebar-1: #b9800f;
+  --metro-titlebar-2: #e8b451;
+
+  --metro-light-off-1: #e7ddc4;
+  --metro-light-off-2: #d3c49f;
+  --metro-light-accent-off-1: #eccdb9;
+  --metro-light-accent-off-2: #dcb097;
+
+  --metro-play-1: #ff8a4c;
+  --metro-play-2: #ff6a3d;
+  --metro-play-text: #2b1300;
+  --metro-play-playing-1: #d8dee5;
+  --metro-play-playing-2: #c1c9d2;
+
+  --theme-switcher-bg: rgba(15, 35, 60, 0.05);
+  --theme-switcher-border: rgba(15, 35, 60, 0.1);
+  --theme-switcher-icon: rgba(16, 32, 47, 0.55);
+  --theme-switcher-active-bg: linear-gradient(135deg, #1c4d8f, #3fb6d8);
+  --theme-switcher-active-icon: #ffffff;
+}
+
+/* System default: mirror light values when user hasn't explicitly forced dark
+   and the OS/browser prefers light. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]):not([data-theme="light"]) {
+    color-scheme: light;
+
+    --bg-page-radial: rgba(63, 182, 216, 0.16);
+    --bg-page: #eef3f8;
+
+    --app-bg: #ffffff;
+    --app-border: rgba(15, 35, 60, 0.08);
+    --app-shadow: 0 22px 46px rgba(20, 45, 80, 0.12);
+
+    --text-primary: #10202f;
+    --text-secondary-80: rgba(16, 32, 47, 0.75);
+    --text-secondary-70: rgba(16, 32, 47, 0.65);
+    --text-secondary-50: rgba(16, 32, 47, 0.5);
+    --text-secondary-45: rgba(16, 32, 47, 0.45);
+    --text-secondary-14: rgba(16, 32, 47, 0.16);
+    --text-secondary-10: rgba(16, 32, 47, 0.12);
+
+    --accent: #1c8bab;
+    --accent-15: rgba(28, 139, 171, 0.13);
+    --accent-10: rgba(28, 139, 171, 0.09);
+    --accent-08: rgba(28, 139, 171, 0.08);
+
+    --card-border: rgba(15, 35, 60, 0.07);
+
+    --track-bg: rgba(15, 35, 60, 0.1);
+    --switch-bg: rgba(15, 35, 60, 0.12);
+
+    --control-border: rgba(15, 35, 60, 0.14);
+    --control-border-soft: rgba(15, 35, 60, 0.1);
+    --control-bg-soft: rgba(15, 35, 60, 0.03);
+
+    --focus-ring: rgba(28, 139, 171, 0.55);
+
+    --transport-text: #ffffff;
+
+    --metro-titlebar-1: #b9800f;
+    --metro-titlebar-2: #e8b451;
+
+    --metro-light-off-1: #e7ddc4;
+    --metro-light-off-2: #d3c49f;
+    --metro-light-accent-off-1: #eccdb9;
+    --metro-light-accent-off-2: #dcb097;
+
+    --metro-play-text: #2b1300;
+    --metro-play-playing-1: #d8dee5;
+    --metro-play-playing-2: #c1c9d2;
+
+    --theme-switcher-bg: rgba(15, 35, 60, 0.05);
+    --theme-switcher-border: rgba(15, 35, 60, 0.1);
+    --theme-switcher-icon: rgba(16, 32, 47, 0.55);
+    --theme-switcher-active-icon: #ffffff;
+  }
+}
+
 body {
   margin: 0;
   font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: radial-gradient(circle at 20% 0%, rgba(55, 154, 184, 0.22), transparent 34rem), #0b1728;
+  background: radial-gradient(circle at 20% 0%, var(--bg-page-radial), transparent 34rem), var(--bg-page);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;   /* fallback for older browsers */
   min-height: 100dvh;  /* accounts for mobile browser address bar showing/hiding */
   padding: 28px 16px;
+  transition: background 0.25s ease;
 }
 
 .layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 920px;
+  width: 100%;
+}
+
+.layout-row {
   display: flex;
   align-items: flex-start;
   justify-content: center;
   gap: 20px;
   flex-wrap: wrap;
-  max-width: 920px;
   width: 100%;
 }
 
-.layout .app {
+.layout-row .app {
   flex: 0 1 440px;
   max-width: 440px;
+}
+
+/* ===== Theme switcher ===== */
+.theme-switcher {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--theme-switcher-bg);
+  border: 1px solid var(--theme-switcher-border);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(6px);
+}
+
+.theme-switcher-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--theme-switcher-icon);
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.theme-switcher-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.theme-switcher-btn:hover {
+  color: var(--accent);
+}
+
+.theme-switcher-btn.active {
+  background: var(--theme-switcher-active-bg);
+  color: var(--theme-switcher-active-icon);
+}
+
+.theme-switcher-btn:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .app {
   width: 100%;
   max-width: 440px;
-  background: #142236;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--app-bg);
+  border: 1px solid var(--app-border);
   border-radius: 22px;
   overflow: hidden;
-  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.28);
+  box-shadow: var(--app-shadow);
+  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 /* ===== Header ===== */
 .titlebar {
-  background: linear-gradient(135deg, #1c4d8f, #2896b0 85%);
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent-teal) 85%);
   color: #f3f8fb;
   padding: 28px 26px 25px;
 }
@@ -70,7 +308,7 @@ body {
 /* ===== Cards ===== */
 .card {
   padding: 22px 26px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .card:last-child {
@@ -81,16 +319,16 @@ body {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(243, 248, 251, 0.5);
+  color: var(--text-secondary-50);
   margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
 }
 
 .label .value {
-  color: #3fb6d8;
+  color: var(--accent);
   font-weight: 700;
-  background: rgba(63, 182, 216, 0.15);
+  background: var(--accent-15);
   padding: 1px 9px;
   border-radius: 20px;
   font-size: 0.78rem;
@@ -105,10 +343,10 @@ input[type="range"] {
   border-radius: 4px;
   background: linear-gradient(
     90deg,
-    #3fb6d8 0%,
-    #3fb6d8 var(--fill, 60%),
-    rgba(255, 255, 255, 0.12) var(--fill, 60%),
-    rgba(255, 255, 255, 0.12) 100%
+    var(--accent) 0%,
+    var(--accent) var(--fill, 60%),
+    var(--track-bg) var(--fill, 60%),
+    var(--track-bg) 100%
   );
   outline: none;
   cursor: pointer;
@@ -118,8 +356,8 @@ input[type="range"]::-webkit-slider-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #f3f8fb;
-  border: 3px solid #3fb6d8;
+  background: var(--app-bg);
+  border: 3px solid var(--accent);
   cursor: pointer;
   transition: transform 0.12s ease;
 }
@@ -132,8 +370,8 @@ input[type="range"]::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #f3f8fb;
-  border: 3px solid #3fb6d8;
+  background: var(--app-bg);
+  border: 3px solid var(--accent);
   cursor: pointer;
 }
 
@@ -145,13 +383,13 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .toggle-row .name {
-  color: #f3f8fb;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 0.98rem;
 }
 
 .toggle-row .sub {
-  color: rgba(243, 248, 251, 0.45);
+  color: var(--text-secondary-45);
   font-size: 0.76rem;
   margin-top: 2px;
 }
@@ -170,7 +408,7 @@ input[type="range"]::-moz-range-thumb {
 .slider {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--switch-bg);
   border-radius: 26px;
   cursor: pointer;
   transition: background 0.25s ease;
@@ -183,17 +421,18 @@ input[type="range"]::-moz-range-thumb {
   height: 20px;
   left: 3px;
   top: 3px;
-  background: #f3f8fb;
+  background: var(--text-primary);
   border-radius: 50%;
   transition: transform 0.25s cubic-bezier(0.4, 1.6, 0.6, 1);
 }
 
 input:checked + .slider {
-  background: linear-gradient(135deg, #1c4d8f, #3fb6d8);
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
 }
 
 input:checked + .slider::before {
   transform: translateX(22px);
+  background: #f3f8fb;
 }
 
 /* ===== Pitch grid ===== */
@@ -206,26 +445,26 @@ input:checked + .slider::before {
 .pitch-btn {
   appearance: none;
   width: 100%;
-  border: 1.5px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid var(--control-border-soft);
+  background: var(--control-bg-soft);
   padding: 13px 0;
   text-align: center;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 600;
-  color: rgba(243, 248, 251, 0.7);
+  color: var(--text-secondary-70);
   transition: all 0.15s ease;
 }
 
 .pitch-btn:hover {
-  border-color: #3fb6d8;
-  color: #3fb6d8;
-  background: rgba(63, 182, 216, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-08);
 }
 
 .pitch-btn.selected {
-  background: linear-gradient(135deg, #1c4d8f, #2896b0);
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent-teal));
   color: #fff;
   border-color: transparent;
 }
@@ -234,7 +473,7 @@ input:checked + .slider::before {
 .transport-btn:focus-visible,
 input:focus-visible + .slider,
 input[type="range"]:focus-visible {
-  outline: 3px solid rgba(96, 207, 235, 0.75);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -247,8 +486,8 @@ input[type="range"]:focus-visible {
   font-size: 1.02rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: #0e1b2e;
-  background: linear-gradient(135deg, #3fb6d8, #2896b0);
+  color: var(--transport-text);
+  background: linear-gradient(135deg, var(--accent), var(--accent-teal));
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -263,11 +502,11 @@ input[type="range"]:focus-visible {
 
 .transport-btn.playing {
   color: #f3f8fb;
-  background: linear-gradient(135deg, #1c4d8f, #123863);
+  background: linear-gradient(135deg, var(--accent-dark), #123863);
 }
 
 .titlebar--metro {
-  background: linear-gradient(135deg, #8a5f16, #d8a13f 85%);
+  background: linear-gradient(135deg, var(--metro-titlebar-1), var(--metro-titlebar-2) 85%);
 }
 
 /* ===== Metronome: beat lights ===== */
@@ -287,8 +526,8 @@ input[type="range"]:focus-visible {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #4a3a1a, #2a2210);
-  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.6);
+  background: radial-gradient(circle at 35% 30%, var(--metro-light-off-1), var(--metro-light-off-2));
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.25);
   transition: background 0.06s ease, box-shadow 0.06s ease, transform 0.06s ease;
   flex-shrink: 0;
 }
@@ -296,7 +535,7 @@ input[type="range"]:focus-visible {
 .metro-light.accent {
   width: 26px;
   height: 26px;
-  background: radial-gradient(circle at 35% 30%, #5a2b1a, #33150c);
+  background: radial-gradient(circle at 35% 30%, var(--metro-light-accent-off-1), var(--metro-light-accent-off-2));
 }
 
 .metro-light.lit {
@@ -326,9 +565,9 @@ input[type="range"]:focus-visible {
 
 .bpm-step {
   appearance: none;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border: 1.5px solid var(--control-border);
   background: transparent;
-  color: #3fb6d8;
+  color: var(--accent);
   width: 46px;
   height: 36px;
   border-radius: 8px;
@@ -339,8 +578,8 @@ input[type="range"]:focus-visible {
 }
 
 .bpm-step:hover {
-  border-color: #3fb6d8;
-  background: rgba(63, 182, 216, 0.1);
+  border-color: var(--accent);
+  background: var(--accent-10);
 }
 
 .bpm-step:active {
@@ -358,7 +597,7 @@ input[type="range"]:focus-visible {
   font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-size: 1.5rem;
   font-weight: 600;
-  color: rgba(243, 248, 251, 0.14);
+  color: var(--text-secondary-14);
   line-height: 1.3;
   height: 1.3em;
 }
@@ -381,7 +620,7 @@ input[type="range"]:focus-visible {
   justify-content: center;
   font-size: 3.2rem;
   font-weight: 800;
-  color: #f3f8fb;
+  color: var(--text-primary);
   line-height: 1.05;
   font-variant-numeric: tabular-nums;
   transition: transform 0.16s cubic-bezier(0.22, 0.9, 0.32, 1.12), opacity 0.14s ease;
@@ -395,7 +634,7 @@ input[type="range"]:focus-visible {
   width: 100%;
   font-size: 3.2rem;
   font-weight: 800;
-  color: #f3f8fb;
+  color: var(--text-primary);
   line-height: 1.05;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
@@ -423,7 +662,7 @@ input[type="range"]:focus-visible {
 .tempo-name {
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(243, 248, 251, 0.75);
+  color: var(--text-secondary-80);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -447,7 +686,7 @@ input[type="range"]:focus-visible {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(243, 248, 251, 0.45);
+  color: var(--text-secondary-45);
 }
 
 .metro-stat-stepper {
@@ -460,7 +699,7 @@ input[type="range"]:focus-visible {
   appearance: none;
   border: none;
   background: transparent;
-  color: rgba(243, 248, 251, 0.3);
+  color: var(--text-secondary-14);
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
@@ -469,26 +708,26 @@ input[type="range"]:focus-visible {
 }
 
 .chevron-btn:hover {
-  color: #3fb6d8;
+  color: var(--accent);
 }
 
 .chevron-btn:disabled {
-  color: rgba(243, 248, 251, 0.1);
+  color: var(--text-secondary-10);
   cursor: default;
 }
 
 .metro-stat-value {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #f3f8fb;
+  color: var(--text-primary);
   min-width: 24px;
 }
 
 .tap-icon-btn {
   appearance: none;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(243, 248, 251, 0.7);
+  border: 1.5px solid var(--control-border);
+  background: var(--control-bg-soft);
+  color: var(--text-secondary-70);
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -505,9 +744,9 @@ input[type="range"]:focus-visible {
 }
 
 .tap-icon-btn:hover {
-  border-color: #3fb6d8;
-  color: #3fb6d8;
-  background: rgba(63, 182, 216, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-08);
 }
 
 .tap-icon-btn:active {
@@ -521,8 +760,8 @@ input[type="range"]:focus-visible {
   width: 100%;
   height: 56px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ff8a4c, #ff6a3d);
-  color: #221703;
+  background: linear-gradient(135deg, var(--metro-play-1), var(--metro-play-2));
+  color: var(--metro-play-text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -544,8 +783,8 @@ input[type="range"]:focus-visible {
 }
 
 .metro-play-btn.playing {
-  background: linear-gradient(135deg, #3a3f47, #23272d);
-  color: #f3f8fb;
+  background: linear-gradient(135deg, var(--metro-play-playing-1), var(--metro-play-playing-2));
+  color: var(--text-primary);
 }
 
 @media (max-width: 380px) {
@@ -557,15 +796,16 @@ input[type="range"]:focus-visible {
   .bpm-roll-track span { height: 2.7rem; }
   .bpm-main-wrap { height: 2.7rem; }
   .bpm-step { width: 40px; }
+  .theme-switcher { top: 10px; right: 10px; }
 }
 
 @media (max-width: 920px) {
-  .layout {
+  .layout-row {
     flex-direction: column;
     align-items: center;
   }
 
-  .layout .app {
+  .layout-row .app {
     flex: 1 1 auto;
     width: 100%;
     max-width: 440px;
