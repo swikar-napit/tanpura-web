@@ -197,6 +197,28 @@ transportBtn.addEventListener("click", async () => {
   }
 });
 
+// ===== Keyboard shortcut: Spacebar toggles tanpura start/stop =====
+document.addEventListener("keydown", (e) => {
+  if (e.code !== "Space" && e.key !== " ") return;
+
+  // Don't hijack space if it's already meant for a focused control
+  // (buttons, sliders, checkboxes all use space natively).
+  const tag = document.activeElement?.tagName;
+  const isFocusableControl =
+    tag === "BUTTON" ||
+    tag === "INPUT" ||
+    tag === "TEXTAREA" ||
+    tag === "SELECT" ||
+    document.activeElement?.isContentEditable;
+
+  if (isFocusableControl) return;
+
+  e.preventDefault();
+  if (!transportBtn.disabled) {
+    transportBtn.click();
+  }
+});
+
 // ===== Background preload =====
 // Fetching + decodeAudioData do NOT require a user gesture — only actually
 // starting sound output does. So we kick off preloading immediately when the
