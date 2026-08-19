@@ -10,15 +10,15 @@
 
 const NOTE_FILE = {
   "C": "c", "C#": "cs", "D": "d", "D#": "ds",
-  "E": "e", "F": "f",  "F#": "fs", "G": "g",
+  "E": "e", "F": "f", "F#": "fs", "G": "g",
   "G#": "gs", "A": "a", "A#": "as", "B": "b"
 };
 
-let audioCtx    = null;
-let gainNode    = null;
-let sourceNode  = null;
+let audioCtx = null;
+let gainNode = null;
+let sourceNode = null;
 let audioBuffer = null;
-let isPlaying   = false;
+let isPlaying = false;
 
 function getAudioContext() {
   if (!audioCtx) {
@@ -32,7 +32,7 @@ function getAudioContext() {
 
 function playBuffer(buffer) {
   if (sourceNode) {
-    try { sourceNode.stop(0); } catch(e) {}
+    try { sourceNode.stop(0); } catch (e) { }
     sourceNode = null;
   }
   const ctx = getAudioContext();
@@ -86,8 +86,8 @@ function preloadAllNotes(priorityNote) {
     : bases;
 
   ordered.forEach((base) => {
-    loadAndDecode(base).catch(() => {});       // Pancham
-    loadAndDecode("m" + base).catch(() => {}); // Madhyam
+    loadAndDecode(base).catch(() => { });       // Pancham
+    loadAndDecode("m" + base).catch(() => { }); // Madhyam
   });
 }
 
@@ -95,7 +95,7 @@ async function startTanpura(note) {
   const ctx = getAudioContext();
   if (ctx.state === "suspended") await ctx.resume();
 
-  const madhyam  = shruthiToggle.checked ? "m" : "";
+  const madhyam = shruthiToggle.checked ? "m" : "";
   const filename = madhyam + NOTE_FILE[note];
 
   const buffer = await loadAndDecode(filename);
@@ -106,16 +106,16 @@ async function startTanpura(note) {
 
 function stopTanpura() {
   if (sourceNode) {
-    try { sourceNode.stop(0); } catch(e) {}
+    try { sourceNode.stop(0); } catch (e) { }
     sourceNode = null;
   }
   audioBuffer = null;
-  isPlaying   = false;
+  isPlaying = false;
 }
 
 // ===== Volume slider =====
 const volSlider = document.getElementById("volSlider");
-const volValue  = document.getElementById("volValue");
+const volValue = document.getElementById("volValue");
 
 volSlider.addEventListener("input", () => {
   volValue.textContent = volSlider.value + "%";
@@ -126,15 +126,15 @@ volSlider.addEventListener("input", () => {
 });
 
 // ===== Pitch grid =====
-const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-const grid  = document.getElementById("pitchGrid");
+const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const grid = document.getElementById("pitchGrid");
 const selectedPitch = document.getElementById("selectedPitch");
 let selectedNote = "C";
 
 NOTES.forEach(note => {
   const btn = document.createElement("button");
-  btn.type        = "button";
-  btn.className   = "pitch-btn" + (note === selectedNote ? " selected" : "");
+  btn.type = "button";
+  btn.className = "pitch-btn" + (note === selectedNote ? " selected" : "");
   btn.textContent = note;
   btn.setAttribute("aria-pressed", note === selectedNote);
 
@@ -154,7 +154,7 @@ NOTES.forEach(note => {
       try {
         await startTanpura(selectedNote);
         transportBtn.textContent = "■ Stop";
-      } catch(err) {
+      } catch (err) {
         console.error(err);
         stopTanpura();
         transportBtn.textContent = "▶ Start";
@@ -187,7 +187,7 @@ transportBtn.addEventListener("click", async () => {
       transportBtn.textContent = "■ Stop";
       transportBtn.classList.add("playing");
       transportBtn.setAttribute("aria-pressed", "true");
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       transportBtn.textContent = "▶ Start";
       alert(`Could not load audio/${NOTE_FILE[selectedNote]}.wav — make sure the file exists.`);
@@ -211,17 +211,17 @@ transportBtn.addEventListener("click", async () => {
     try {
       const saved = localStorage.getItem(THEME_KEY);
       if (saved === "light" || saved === "dark") return saved;
-    } catch (e) {}
+    } catch (e) { }
     return "system"; // default
   }
 
   function applyChoice(choice) {
     if (choice === "system") {
       root.removeAttribute("data-theme");
-      try { localStorage.removeItem(THEME_KEY); } catch (e) {}
+      try { localStorage.removeItem(THEME_KEY); } catch (e) { }
     } else {
       root.setAttribute("data-theme", choice);
-      try { localStorage.setItem(THEME_KEY, choice); } catch (e) {}
+      try { localStorage.setItem(THEME_KEY, choice); } catch (e) { }
     }
 
     Object.entries(btns).forEach(([key, btn]) => {
@@ -300,40 +300,40 @@ preloadAllNotes("C");       // starts fetch+decode for all 24 files, "C" first
 // are scheduled against audioCtx.currentTime, which is sample-accurate and
 // immune to JS/UI thread jitter. This is what keeps tempo rock-solid even
 // if the tab is busy re-rendering something else.
-const bpmSlider     = document.getElementById("bpmSlider");
-const bpmMainWrap   = document.getElementById("bpmMainWrap");
-const bpmMainEl     = document.getElementById("bpmMain");
-const bpmGhostUpEl  = document.getElementById("bpmGhostUp");
-const bpmGhostDnEl  = document.getElementById("bpmGhostDown");
-const tempoNameEl   = document.getElementById("tempoName");
-const tapTempoBtn   = document.getElementById("tapTempoBtn");
+const bpmSlider = document.getElementById("bpmSlider");
+const bpmMainWrap = document.getElementById("bpmMainWrap");
+const bpmMainEl = document.getElementById("bpmMain");
+const bpmGhostUpEl = document.getElementById("bpmGhostUp");
+const bpmGhostDnEl = document.getElementById("bpmGhostDown");
+const tempoNameEl = document.getElementById("tempoName");
+const tapTempoBtn = document.getElementById("tapTempoBtn");
 const metroLightsEl = document.getElementById("metroLights");
-const metroBtn      = document.getElementById("metroBtn");
+const metroBtn = document.getElementById("metroBtn");
 const metroPlayIcon = document.getElementById("metroPlayIcon");
 
-const beatsValueEl  = document.getElementById("beatsValue");
+const beatsValueEl = document.getElementById("beatsValue");
 const beatsMinusBtn = document.getElementById("beatsMinusBtn");
-const beatsPlusBtn  = document.getElementById("beatsPlusBtn");
+const beatsPlusBtn = document.getElementById("beatsPlusBtn");
 
-const bpmMinus1Btn  = document.getElementById("bpmMinus1");
-const bpmMinus5Btn  = document.getElementById("bpmMinus5");
-const bpmPlus1Btn   = document.getElementById("bpmPlus1");
-const bpmPlus5Btn   = document.getElementById("bpmPlus5");
+const bpmMinus1Btn = document.getElementById("bpmMinus1");
+const bpmMinus5Btn = document.getElementById("bpmMinus5");
+const bpmPlus1Btn = document.getElementById("bpmPlus1");
+const bpmPlus5Btn = document.getElementById("bpmPlus5");
 
 const SCHEDULE_AHEAD_TIME = 0.1;  // seconds — how far ahead we schedule audio
-const LOOKAHEAD_INTERVAL  = 25;   // ms — how often the scheduler wakes up
+const LOOKAHEAD_INTERVAL = 25;   // ms — how often the scheduler wakes up
 const BPM_MIN = 40;
 const BPM_MAX = 208;
 const BEATS_MIN = 1;
 const BEATS_MAX = 16;
 
-let bpm            = parseInt(bpmSlider.value, 10);
-let beatsPerBar    = 4;
+let bpm = parseInt(bpmSlider.value, 10);
+let beatsPerBar = 4;
 let metroIsPlaying = false;
-let metroTimerId   = null;
-let nextNoteTime   = 0;
-let currentBeat    = 0;
-let tapTimes       = [];
+let metroTimerId = null;
+let nextNoteTime = 0;
+let currentBeat = 0;
+let tapTimes = [];
 
 function clamp(n, min, max) {
   return Math.min(max, Math.max(min, n));
@@ -341,10 +341,10 @@ function clamp(n, min, max) {
 
 // Classic Italian tempo markings, used just for the label next to the slider.
 const TEMPO_NAMES = [
-  { max: 45,  name: "Larghissimo" },
-  { max: 60,  name: "Largo" },
-  { max: 66,  name: "Larghetto" },
-  { max: 76,  name: "Adagio" },
+  { max: 45, name: "Larghissimo" },
+  { max: 60, name: "Largo" },
+  { max: 66, name: "Larghetto" },
+  { max: 76, name: "Adagio" },
   { max: 108, name: "Andante" },
   { max: 120, name: "Moderato" },
   { max: 156, name: "Allegro" },
@@ -482,7 +482,7 @@ function flashBeat(beatIndex) {
 // Short synthesized click — accented beat is higher pitched/louder.
 function scheduleClick(beatIndex, time) {
   const ctx = getAudioContext();
-  const osc  = ctx.createOscillator();
+  const osc = ctx.createOscillator();
   const gain = ctx.createGain();
 
   const isAccent = beatIndex === 0;
@@ -515,7 +515,7 @@ function metroScheduler() {
 async function startMetronome() {
   const ctx = getAudioContext();
   if (ctx.state === "suspended") await ctx.resume();
-  currentBeat  = 0;
+  currentBeat = 0;
   nextNoteTime = ctx.currentTime + 0.05;
   metroScheduler();
   metroIsPlaying = true;
@@ -585,7 +585,7 @@ shruthiToggle.addEventListener("change", async () => {
     try {
       await startTanpura(selectedNote);
       transportBtn.textContent = "■ Stop";
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       stopTanpura();
       transportBtn.textContent = "▶ Start";

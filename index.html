@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Web Tanpura</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
   <script>
     // Apply saved theme before first paint to avoid a flash of the wrong theme.
     (function () {
@@ -14,138 +16,151 @@
         if (saved === "light" || saved === "dark") {
           document.documentElement.setAttribute("data-theme", saved);
         }
-      } catch (e) {}
+      } catch (e) { }
     })();
   </script>
 </head>
+
 <body>
 
   <div class="layout">
     <div class="theme-switcher" role="group" aria-label="Theme">
-      <button type="button" class="theme-switcher-btn" id="themeLightBtn" data-theme-choice="light" aria-label="Light theme" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button type="button" class="theme-switcher-btn" id="themeLightBtn" data-theme-choice="light"
+        aria-label="Light theme" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
           <circle cx="12" cy="12" r="4"></circle>
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          <path
+            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41">
+          </path>
         </svg>
       </button>
-      <button type="button" class="theme-switcher-btn" id="themeSystemBtn" data-theme-choice="system" aria-label="System theme" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button type="button" class="theme-switcher-btn" id="themeSystemBtn" data-theme-choice="system"
+        aria-label="System theme" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="13" rx="2"></rect>
           <path d="M8 21h8M12 17v4"></path>
         </svg>
       </button>
-      <button type="button" class="theme-switcher-btn" id="themeDarkBtn" data-theme-choice="dark" aria-label="Dark theme" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button type="button" class="theme-switcher-btn" id="themeDarkBtn" data-theme-choice="dark"
+        aria-label="Dark theme" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path>
         </svg>
       </button>
     </div>
 
     <div class="layout-row">
-    <div class="app">
-      <header class="titlebar">
-        <p class="eyebrow">Practice companion</p>
-        <h1>Web Tanpura</h1>
-        <p>Set your shruthi, then let the drone hold the space.</p>
-      </header>
+      <div class="app">
+        <header class="titlebar">
+          <p class="eyebrow">Practice companion</p>
+          <h1>Web Tanpura</h1>
+          <p>Set your shruthi, then let the drone hold the space.</p>
+        </header>
 
-      <div class="card">
-        <div class="label"><label for="volSlider">Volume</label><span class="value" id="volValue">60%</span></div>
-        <input type="range" id="volSlider" min="0" max="100" value="60" style="--fill:60%" aria-label="Volume">
-      </div>
-
-      <div class="card">
-        <div class="toggle-row">
-          <div>
-            <div class="name">Madhyam Shruthi</div>
-            <div class="sub">Switch tuning mode</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="shruthiToggle" aria-label="Enable Madhyam Shruthi">
-            <span class="slider"></span>
-          </label>
+        <div class="card">
+          <div class="label"><label for="volSlider">Volume</label><span class="value" id="volValue">60%</span></div>
+          <input type="range" id="volSlider" min="0" max="100" value="60" style="--fill:60%" aria-label="Volume">
         </div>
-      </div>
 
-      <div class="card">
-        <div class="label">Select Pitch <span class="value" id="selectedPitch">C</span></div>
-        <div class="pitch-grid" id="pitchGrid" role="group" aria-label="Select pitch"></div>
-      </div>
-
-      <div class="card">
-        <button class="transport-btn" id="transportBtn" aria-pressed="false">▶ Start</button>
-      </div>
-    </div>
-
-    <div class="app app--metro">
-      <header class="titlebar titlebar--metro">
-        <p class="eyebrow">Keep the taal</p>
-        <h1>Metronome</h1>
-        <p>Set your tempo and let it click alongside the drone.</p>
-      </header>
-
-      <div class="card metro-lights-card">
-        <div class="metro-lights" id="metroLights" aria-hidden="true"></div>
-      </div>
-
-      <div class="card">
-        <div class="bpm-block">
-          <div class="bpm-col">
-            <button type="button" class="bpm-step" id="bpmMinus1" aria-label="Decrease tempo by 1">-1</button>
-            <button type="button" class="bpm-step" id="bpmMinus5" aria-label="Decrease tempo by 5">-5</button>
-          </div>
-
-          <div class="bpm-center">
-            <span class="bpm-ghost" id="bpmGhostUp"></span>
-            <div class="bpm-main-wrap" id="bpmMainWrap" aria-live="polite" aria-atomic="true">
-              <span class="bpm-main" id="bpmMain" aria-label="80 beats per minute">80</span>
+        <div class="card">
+          <div class="toggle-row">
+            <div>
+              <div class="name">Madhyam Shruthi</div>
+              <div class="sub">Switch tuning mode</div>
             </div>
-            <span class="bpm-ghost" id="bpmGhostDown"></span>
-          </div>
-
-          <div class="bpm-col">
-            <button type="button" class="bpm-step" id="bpmPlus1" aria-label="Increase tempo by 1">+1</button>
-            <button type="button" class="bpm-step" id="bpmPlus5" aria-label="Increase tempo by 5">+5</button>
+            <label class="switch">
+              <input type="checkbox" id="shruthiToggle" aria-label="Enable Madhyam Shruthi">
+              <span class="slider"></span>
+            </label>
           </div>
         </div>
 
-        <div class="bpm-slider-row">
-          <input type="range" id="bpmSlider" min="40" max="208" value="80" aria-label="Tempo in beats per minute">
-          <span class="tempo-name" id="tempoName">Moderato</span>
+        <div class="card">
+          <div class="label">Select Pitch <span class="value" id="selectedPitch">C</span></div>
+          <div class="pitch-grid" id="pitchGrid" role="group" aria-label="Select pitch"></div>
+        </div>
+
+        <div class="card">
+          <button class="transport-btn" id="transportBtn" aria-pressed="false">▶ Start</button>
         </div>
       </div>
 
-      <div class="card metro-stats-card">
-        <div class="metro-stat">
-          <span class="metro-stat-label">Beats/bar</span>
-          <div class="metro-stat-stepper">
-            <button type="button" class="chevron-btn" id="beatsMinusBtn" aria-label="Fewer beats per bar">‹</button>
-            <span class="metro-stat-value" id="beatsValue">4</span>
-            <button type="button" class="chevron-btn" id="beatsPlusBtn" aria-label="More beats per bar">›</button>
+      <div class="app app--metro">
+        <header class="titlebar titlebar--metro">
+          <p class="eyebrow">Keep the taal</p>
+          <h1>Metronome</h1>
+          <p>Set your tempo and let it click alongside the drone.</p>
+        </header>
+
+        <div class="card metro-lights-card">
+          <div class="metro-lights" id="metroLights" aria-hidden="true"></div>
+        </div>
+
+        <div class="card">
+          <div class="bpm-block">
+            <div class="bpm-col">
+              <button type="button" class="bpm-step" id="bpmMinus1" aria-label="Decrease tempo by 1">-1</button>
+              <button type="button" class="bpm-step" id="bpmMinus5" aria-label="Decrease tempo by 5">-5</button>
+            </div>
+
+            <div class="bpm-center">
+              <span class="bpm-ghost" id="bpmGhostUp"></span>
+              <div class="bpm-main-wrap" id="bpmMainWrap" aria-live="polite" aria-atomic="true">
+                <span class="bpm-main" id="bpmMain" aria-label="80 beats per minute">80</span>
+              </div>
+              <span class="bpm-ghost" id="bpmGhostDown"></span>
+            </div>
+
+            <div class="bpm-col">
+              <button type="button" class="bpm-step" id="bpmPlus1" aria-label="Increase tempo by 1">+1</button>
+              <button type="button" class="bpm-step" id="bpmPlus5" aria-label="Increase tempo by 5">+5</button>
+            </div>
+          </div>
+
+          <div class="bpm-slider-row">
+            <input type="range" id="bpmSlider" min="40" max="208" value="80" aria-label="Tempo in beats per minute">
+            <span class="tempo-name" id="tempoName">Moderato</span>
           </div>
         </div>
 
-        <div class="metro-stat">
-          <span class="metro-stat-label">Tap Tempo</span>
-          <button type="button" class="tap-icon-btn" id="tapTempoBtn" aria-label="Tap to set tempo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 4v9a3 3 0 1 0 3 3V4Z" />
-              <path d="M14 8h3a2 2 0 0 1 2 2v9" />
-              <path d="M14 13h3" />
+        <div class="card metro-stats-card">
+          <div class="metro-stat">
+            <span class="metro-stat-label">Beats/bar</span>
+            <div class="metro-stat-stepper">
+              <button type="button" class="chevron-btn" id="beatsMinusBtn" aria-label="Fewer beats per bar">‹</button>
+              <span class="metro-stat-value" id="beatsValue">4</span>
+              <button type="button" class="chevron-btn" id="beatsPlusBtn" aria-label="More beats per bar">›</button>
+            </div>
+          </div>
+
+          <div class="metro-stat">
+            <span class="metro-stat-label">Tap Tempo</span>
+            <button type="button" class="tap-icon-btn" id="tapTempoBtn" aria-label="Tap to set tempo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M9 4v9a3 3 0 1 0 3 3V4Z" />
+                <path d="M14 8h3a2 2 0 0 1 2 2v9" />
+                <path d="M14 13h3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <button class="metro-play-btn" id="metroBtn" aria-pressed="false" aria-label="Start metronome">
+            <svg viewBox="0 0 24 24" fill="currentColor" id="metroPlayIcon">
+              <path d="M8 5v14l11-7Z" />
             </svg>
           </button>
         </div>
       </div>
-
-      <div class="card">
-        <button class="metro-play-btn" id="metroBtn" aria-pressed="false" aria-label="Start metronome">
-          <svg viewBox="0 0 24 24" fill="currentColor" id="metroPlayIcon"><path d="M8 5v14l11-7Z" /></svg>
-        </button>
-      </div>
-    </div>
     </div>
   </div>
 
   <script src="main.js"></script>
 </body>
+
 </html>

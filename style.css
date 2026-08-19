@@ -186,8 +186,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: 100vh;   /* fallback for older browsers */
-  min-height: 100dvh;  /* accounts for mobile browser address bar showing/hiding */
+  min-height: 100vh;
+  /* fallback for older browsers */
+  min-height: 100dvh;
+  /* accounts for mobile browser address bar showing/hiding */
   padding: 28px 16px;
   transition: background 0.25s ease;
 }
@@ -341,16 +343,15 @@ input[type="range"] {
   width: 100%;
   height: 6px;
   border-radius: 4px;
-  background: linear-gradient(
-    90deg,
-    var(--accent) 0%,
-    var(--accent) var(--fill, 60%),
-    var(--track-bg) var(--fill, 60%),
-    var(--track-bg) 100%
-  );
+  background: linear-gradient(90deg,
+      var(--accent) 0%,
+      var(--accent) var(--fill, 60%),
+      var(--track-bg) var(--fill, 60%),
+      var(--track-bg) 100%);
   outline: none;
   cursor: pointer;
 }
+
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 20px;
@@ -426,11 +427,11 @@ input[type="range"]::-moz-range-thumb {
   transition: transform 0.25s cubic-bezier(0.4, 1.6, 0.6, 1);
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background: linear-gradient(135deg, var(--accent-dark), var(--accent));
 }
 
-input:checked + .slider::before {
+input:checked+.slider::before {
   transform: translateX(22px);
   background: #f3f8fb;
 }
@@ -471,7 +472,7 @@ input:checked + .slider::before {
 
 .pitch-btn:focus-visible,
 .transport-btn:focus-visible,
-input:focus-visible + .slider,
+input:focus-visible+.slider,
 input[type="range"]:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
@@ -788,15 +789,45 @@ input[type="range"]:focus-visible {
 }
 
 @media (max-width: 380px) {
-  body { padding: 12px; }
-  .titlebar, .card { padding-left: 20px; padding-right: 20px; }
-  .pitch-grid { gap: 7px; }
-  .bpm-block { gap: 12px; }
-  .bpm-main, .bpm-roll-track { font-size: 2.5rem; }
-  .bpm-roll-track span { height: 2.7rem; }
-  .bpm-main-wrap { height: 2.7rem; }
-  .bpm-step { width: 40px; }
-  .theme-switcher { top: 10px; right: 10px; }
+  body {
+    padding: 12px;
+  }
+
+  .titlebar,
+  .card {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .pitch-grid {
+    gap: 7px;
+  }
+
+  .bpm-block {
+    gap: 12px;
+  }
+
+  .bpm-main,
+  .bpm-roll-track {
+    font-size: 2.5rem;
+  }
+
+  .bpm-roll-track span {
+    height: 2.7rem;
+  }
+
+  .bpm-main-wrap {
+    height: 2.7rem;
+  }
+
+  .bpm-step {
+    width: 40px;
+  }
+
+  .theme-switcher {
+    top: 10px;
+    right: 10px;
+  }
 }
 
 @media (max-width: 920px) {
